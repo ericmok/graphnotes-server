@@ -1,5 +1,14 @@
+type Token {
+  token: String
+}
+
+type User {
+  username: String
+}
+
 type Query {
   _: Boolean
+  users: [User]!
 }
 
 type Mutation {

@@ -1,3 +1,8 @@
+.idea/
+.vscode/
+build/
+tmp/
+temp/
 node_modules
 dist
 package-lock.json
@@ -5,4 +10,3 @@ package-lock.json
 .vscode
 .env*
 *.log
-yarn.lock

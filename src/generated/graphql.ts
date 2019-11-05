@@ -1,6 +1,7 @@
 import { GraphQLResolveInfo } from 'graphql';
 import { Context } from '../utils';
 export type Maybe<T> = T | null;
+export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string,
@@ -26,6 +27,13 @@ export type AdditionalEntityFields = {
 export type Mutation = {
    __typename?: 'Mutation',
   _?: Maybe<Scalars['Boolean']>,
+  signup?: Maybe<User>,
+};
+
+
+export type MutationSignupArgs = {
+  username: Scalars['String'],
+  password: Scalars['String']
 };
 
 export type Query = {
@@ -36,7 +44,7 @@ export type Query = {
 
 export type Token = {
    __typename?: 'Token',
-  token?: Maybe<Scalars['String']>,
+  token: Scalars['String'],
 };
 
 export type User = {
@@ -156,6 +164,7 @@ export type MapDirectiveResolver<Result, Parent, ContextType = Context, Args = {
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   _?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>,
+  signup?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationSignupArgs, 'username' | 'password'>>,
 };
 
 export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -164,7 +173,7 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
 };
 
 export type TokenResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Token'] = ResolversParentTypes['Token']> = {
-  token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
 };
 
 export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {

@@ -1,5 +1,5 @@
 type Token {
-  token: String
+  token: String!
 }
 
 type User {
@@ -13,4 +13,5 @@ type Query {
 
 type Mutation {
   _: Boolean
+  signup(username: String!, password: String!): User
 }

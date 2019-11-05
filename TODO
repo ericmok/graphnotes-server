@@ -1,6 +1,6 @@
 Auth Signup Mutation:
     ☐ Move validation methods to User Entity? @created(19-11-05 13:01)
-    ☐ Create GQL Prefix for Types for User @created(19-11-05 13:05)
+    ✔ Create GQL Prefix for Types for User @created(19-11-05 13:05) @done(19-11-05 14:04)
         So that GQL types can be differentiated from Entity types
     ☐ Move unique constraint check to User entity? @created(19-11-05 13:03)
         Move to service instead?

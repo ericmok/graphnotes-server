@@ -1,5 +1,5 @@
 import {Entity, ObjectIdColumn, ObjectID, Column} from "typeorm";
-import {User as GQLUser} from '../generated/graphql';
+import {GQLUser} from '../generated/graphql';
 
 @Entity()
 export class User {

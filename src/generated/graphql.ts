@@ -19,35 +19,35 @@ export type Scalars = {
 
 
 
-export type AdditionalEntityFields = {
+export type GQLAdditionalEntityFields = {
   path?: Maybe<Scalars['String']>,
   type?: Maybe<Scalars['String']>,
 };
 
-export type Mutation = {
+export type GQLMutation = {
    __typename?: 'Mutation',
   _?: Maybe<Scalars['Boolean']>,
-  signup?: Maybe<User>,
+  signup?: Maybe<GQLUser>,
 };
 
 
-export type MutationSignupArgs = {
+export type GQLMutationSignupArgs = {
   username: Scalars['String'],
   password: Scalars['String']
 };
 
-export type Query = {
+export type GQLQuery = {
    __typename?: 'Query',
   _?: Maybe<Scalars['Boolean']>,
-  users: Array<Maybe<User>>,
+  users: Array<Maybe<GQLUser>>,
 };
 
-export type Token = {
+export type GQLToken = {
    __typename?: 'Token',
   token: Scalars['String'],
 };
 
-export type User = {
+export type GQLUser = {
    __typename?: 'User',
   username?: Maybe<Scalars['String']>,
 };
@@ -122,93 +122,83 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 ) => TResult | Promise<TResult>;
 
 /** Mapping between all available schema types and the resolvers types */
-export type ResolversTypes = {
+export type GQLResolversTypes = {
   Query: ResolverTypeWrapper<{}>,
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>,
-  User: ResolverTypeWrapper<User>,
+  User: ResolverTypeWrapper<GQLUser>,
   String: ResolverTypeWrapper<Scalars['String']>,
   Mutation: ResolverTypeWrapper<{}>,
-  Token: ResolverTypeWrapper<Token>,
-  AdditionalEntityFields: AdditionalEntityFields,
+  Token: ResolverTypeWrapper<GQLToken>,
+  AdditionalEntityFields: GQLAdditionalEntityFields,
 };
 
 /** Mapping between all available schema types and the resolvers parents */
-export type ResolversParentTypes = {
+export type GQLResolversParentTypes = {
   Query: {},
   Boolean: Scalars['Boolean'],
-  User: User,
+  User: GQLUser,
   String: Scalars['String'],
   Mutation: {},
-  Token: Token,
-  AdditionalEntityFields: AdditionalEntityFields,
+  Token: GQLToken,
+  AdditionalEntityFields: GQLAdditionalEntityFields,
 };
 
-export type UnionDirectiveResolver<Result, Parent, ContextType = Context, Args = {   discriminatorField?: Maybe<Maybe<Scalars['String']>>,
-  additionalFields?: Maybe<Maybe<Array<Maybe<AdditionalEntityFields>>>> }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type GQLUnionDirectiveResolver<Result, Parent, ContextType = Context, Args = {   discriminatorField?: Maybe<Maybe<Scalars['String']>>,
+  additionalFields?: Maybe<Maybe<Array<Maybe<GQLAdditionalEntityFields>>>> }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
-export type AbstractEntityDirectiveResolver<Result, Parent, ContextType = Context, Args = {   discriminatorField?: Maybe<Scalars['String']>,
-  additionalFields?: Maybe<Maybe<Array<Maybe<AdditionalEntityFields>>>> }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type GQLAbstractEntityDirectiveResolver<Result, Parent, ContextType = Context, Args = {   discriminatorField?: Maybe<Scalars['String']>,
+  additionalFields?: Maybe<Maybe<Array<Maybe<GQLAdditionalEntityFields>>>> }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
-export type EntityDirectiveResolver<Result, Parent, ContextType = Context, Args = {   embedded?: Maybe<Maybe<Scalars['Boolean']>>,
-  additionalFields?: Maybe<Maybe<Array<Maybe<AdditionalEntityFields>>>> }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type GQLEntityDirectiveResolver<Result, Parent, ContextType = Context, Args = {   embedded?: Maybe<Maybe<Scalars['Boolean']>>,
+  additionalFields?: Maybe<Maybe<Array<Maybe<GQLAdditionalEntityFields>>>> }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
-export type ColumnDirectiveResolver<Result, Parent, ContextType = Context, Args = {   overrideType?: Maybe<Maybe<Scalars['String']>> }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type GQLColumnDirectiveResolver<Result, Parent, ContextType = Context, Args = {   overrideType?: Maybe<Maybe<Scalars['String']>> }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
-export type IdDirectiveResolver<Result, Parent, ContextType = Context, Args = {  }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type GQLIdDirectiveResolver<Result, Parent, ContextType = Context, Args = {  }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
-export type LinkDirectiveResolver<Result, Parent, ContextType = Context, Args = {   overrideType?: Maybe<Maybe<Scalars['String']>> }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type GQLLinkDirectiveResolver<Result, Parent, ContextType = Context, Args = {   overrideType?: Maybe<Maybe<Scalars['String']>> }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
-export type EmbeddedDirectiveResolver<Result, Parent, ContextType = Context, Args = {  }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type GQLEmbeddedDirectiveResolver<Result, Parent, ContextType = Context, Args = {  }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
-export type MapDirectiveResolver<Result, Parent, ContextType = Context, Args = {   path?: Maybe<Scalars['String']> }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type GQLMapDirectiveResolver<Result, Parent, ContextType = Context, Args = {   path?: Maybe<Scalars['String']> }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
-export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  _?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>,
-  signup?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationSignupArgs, 'username' | 'password'>>,
+export type GQLMutationResolvers<ContextType = Context, ParentType extends GQLResolversParentTypes['Mutation'] = GQLResolversParentTypes['Mutation']> = {
+  _?: Resolver<Maybe<GQLResolversTypes['Boolean']>, ParentType, ContextType>,
+  signup?: Resolver<Maybe<GQLResolversTypes['User']>, ParentType, ContextType, RequireFields<GQLMutationSignupArgs, 'username' | 'password'>>,
 };
 
-export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  _?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>,
-  users?: Resolver<Array<Maybe<ResolversTypes['User']>>, ParentType, ContextType>,
+export type GQLQueryResolvers<ContextType = Context, ParentType extends GQLResolversParentTypes['Query'] = GQLResolversParentTypes['Query']> = {
+  _?: Resolver<Maybe<GQLResolversTypes['Boolean']>, ParentType, ContextType>,
+  users?: Resolver<Array<Maybe<GQLResolversTypes['User']>>, ParentType, ContextType>,
 };
 
-export type TokenResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Token'] = ResolversParentTypes['Token']> = {
-  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+export type GQLTokenResolvers<ContextType = Context, ParentType extends GQLResolversParentTypes['Token'] = GQLResolversParentTypes['Token']> = {
+  token?: Resolver<GQLResolversTypes['String'], ParentType, ContextType>,
 };
 
-export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  username?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+export type GQLUserResolvers<ContextType = Context, ParentType extends GQLResolversParentTypes['User'] = GQLResolversParentTypes['User']> = {
+  username?: Resolver<Maybe<GQLResolversTypes['String']>, ParentType, ContextType>,
 };
 
-export type Resolvers<ContextType = Context> = {
-  Mutation?: MutationResolvers<ContextType>,
-  Query?: QueryResolvers<ContextType>,
-  Token?: TokenResolvers<ContextType>,
-  User?: UserResolvers<ContextType>,
-};
-
-
-/**
- * @deprecated
- * Use "Resolvers" root object instead. If you wish to get "IResolvers", add "typesPrefix: I" to your config.
-*/
-export type IResolvers<ContextType = Context> = Resolvers<ContextType>;
-export type DirectiveResolvers<ContextType = Context> = {
-  union?: UnionDirectiveResolver<any, any, ContextType>,
-  abstractEntity?: AbstractEntityDirectiveResolver<any, any, ContextType>,
-  entity?: EntityDirectiveResolver<any, any, ContextType>,
-  column?: ColumnDirectiveResolver<any, any, ContextType>,
-  id?: IdDirectiveResolver<any, any, ContextType>,
-  link?: LinkDirectiveResolver<any, any, ContextType>,
-  embedded?: EmbeddedDirectiveResolver<any, any, ContextType>,
-  map?: MapDirectiveResolver<any, any, ContextType>,
+export type GQLResolvers<ContextType = Context> = {
+  Mutation?: GQLMutationResolvers<ContextType>,
+  Query?: GQLQueryResolvers<ContextType>,
+  Token?: GQLTokenResolvers<ContextType>,
+  User?: GQLUserResolvers<ContextType>,
 };
 
 
-/**
-* @deprecated
-* Use "DirectiveResolvers" root object instead. If you wish to get "IDirectiveResolvers", add "typesPrefix: I" to your config.
-*/
-export type IDirectiveResolvers<ContextType = Context> = DirectiveResolvers<ContextType>;
+export type GQLDirectiveResolvers<ContextType = Context> = {
+  union?: GQLUnionDirectiveResolver<any, any, ContextType>,
+  abstractEntity?: GQLAbstractEntityDirectiveResolver<any, any, ContextType>,
+  entity?: GQLEntityDirectiveResolver<any, any, ContextType>,
+  column?: GQLColumnDirectiveResolver<any, any, ContextType>,
+  id?: GQLIdDirectiveResolver<any, any, ContextType>,
+  link?: GQLLinkDirectiveResolver<any, any, ContextType>,
+  embedded?: GQLEmbeddedDirectiveResolver<any, any, ContextType>,
+  map?: GQLMapDirectiveResolver<any, any, ContextType>,
+};
+
+
 import { ObjectID } from 'mongodb';
 import gql from 'graphql-tag';

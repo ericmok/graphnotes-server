@@ -5,6 +5,7 @@ generates:
   src/generated/graphql.ts:
     config:
       contextType: ../utils#Context
+      typesPrefix: 'GQL'
     plugins:
       - "typescript"
       - "typescript-resolvers"

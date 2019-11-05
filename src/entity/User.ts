@@ -1,5 +1,5 @@
-import {Entity, ObjectIdColumn, ObjectID, Column} from "typeorm";
-import {GQLUser} from '../generated/graphql';
+import { Entity, ObjectIdColumn, ObjectID, Column } from "typeorm";
+import { GQLUser } from '../generated/graphql';
 
 @Entity()
 export class User {
@@ -7,7 +7,7 @@ export class User {
     @ObjectIdColumn()
     id: ObjectID;
 
-    @Column({unique: true})
+    @Column({ unique: true })
     username: string;
 
     @Column()
@@ -25,7 +25,7 @@ export class User {
         }
     }
 
-    constructor(data?: {username: string, password: string}) {
+    constructor(data?: { username: string, password: string }) {
         if (data) {
             this.username = data.username;
             this.password = data.password;

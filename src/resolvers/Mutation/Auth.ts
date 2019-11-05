@@ -1,6 +1,4 @@
 import { GQLMutationResolvers } from '../../generated/graphql';
-// import { getManager } from 'typeorm';
-// import { User } from '../../entity/User';
 import AuthService from '../../services/Auth';
 
 const Auth: GQLMutationResolvers = {

@@ -10,9 +10,11 @@ xdescribe('Database', () => {
     let testDatabase = await getTestDatabaseInstance();
     let server = await createTestServer(testDatabase);
     let client = await createTestClient(server);
-
+    
     expect(client).not.toBe(null);
     expect(client.query).not.toBe(null);
+    
+    await testDatabase.synchronize(true);
 
     let res: GraphQLResponse;
     res = await client.query({
@@ -33,6 +35,8 @@ xdescribe('Database', () => {
     testDatabase = await getTestDatabaseInstance();
     server = await createTestServer(testDatabase);
     client = await createTestClient(server);
+
+    await testDatabase.synchronize(true);
 
     res = await client.query({
       query: GET_USERS

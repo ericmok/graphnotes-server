@@ -1,14 +1,14 @@
 import { getManager } from 'typeorm';
+import { UserInputError } from 'apollo-server';
 import { User } from '../entity/User';
 
-class UserAlreadyExistsError extends Error {
+export class UserAlreadyExistsError extends UserInputError {
   constructor() {
     super("A user has already used this username. Please choose another username.");
-    this.name = "UserAlreadyExistsError";
   }
 }
 
-class UserCreationDatabaseError extends Error {
+export class UserCreationDatabaseError extends Error {
   constructor(err) {
     super(err);
     this.name = "UserCreationDatabaseError";
@@ -26,7 +26,7 @@ const Auth = {
     }
 
     try {
-      const newUser = new User({username, password});
+      const newUser = new User({ username, password });
       const saveResult = await getManager().save(newUser);
       return saveResult;
     }
@@ -37,3 +37,8 @@ const Auth = {
 };
 
 export default Auth;
+
+/*
+References
+https://stackoverflow.com/questions/51860043/javascript-es6-typeerror-class-constructor-client-cannot-be-invoked-without-ne
+*/

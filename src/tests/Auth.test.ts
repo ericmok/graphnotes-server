@@ -3,6 +3,7 @@ import { ApolloServer, gql } from 'apollo-server';
 import { GraphQLResponse } from 'graphql-extensions';
 import { Connection } from 'typeorm';
 import createTestServer, { getTestDatabaseInstance } from './TestServer';
+import { UserAlreadyExistsError } from '../services/Auth';
 
 let server: ApolloServer;
 let client: ApolloServerTestClient;
@@ -52,11 +53,12 @@ describe('Auth', () => {
       mutation: gql`mutation { signup(username:"test3", password: "test3") { username }}`
     })
     expect(res.data.signup.username).toBe("test3");
-    
+
     res = await client.mutate({
       mutation: gql`mutation { signup(username:"test3", password: "test3") { username }}`
-    })
-    console.log(res.errors);
+    });
+    expect(res.errors[0].message).toContain("username");
+    expect(res.errors[0].extensions.code).toBe('BAD_USER_INPUT');
 
     res = await queryUsers(client);
     expect(res.data.users.length).not.toBe(2);

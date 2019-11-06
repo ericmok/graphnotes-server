@@ -13,4 +13,4 @@ Database:
     ☐ Guard test database clearing in non dev mode? @created(19-11-06 09:11)
     ☐ Restart database in testing @created(19-11-06 09:11) @started(19-11-06 09:11)
     ☐ Handle database connections when server starts/restarts and AlreadyHasActiveConnectionError @created(19-11-06 09:12)
-    ☐ Change Errors to ApolloErrors @created(19-11-06 09:49)
+    ✔ Change Errors to ApolloErrors @created(19-11-06 09:49) @done(19-11-06 10:36)

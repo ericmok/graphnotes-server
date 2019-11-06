@@ -7,3 +7,10 @@ Auth Signup Mutation:
     ☐ Add username, password validations to User entity? @created(19-11-05 13:19)
     ✔ Add setter to User entity constructor @created(19-11-05 13:11) @done(19-11-05 13:35)
     ☐ Add tests for signup @created(19-11-05 13:37)
+
+Database:
+    ☐ Handle when server starts with no database @created(19-11-06 09:10)
+    ☐ Guard test database clearing in non dev mode? @created(19-11-06 09:11)
+    ☐ Restart database in testing @created(19-11-06 09:11) @started(19-11-06 09:11)
+    ☐ Handle database connections when server starts/restarts and AlreadyHasActiveConnectionError @created(19-11-06 09:12)
+    ☐ Change Errors to ApolloErrors @created(19-11-06 09:49)

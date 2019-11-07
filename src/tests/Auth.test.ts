@@ -28,85 +28,89 @@ describe('Auth', () => {
     server.stop();
   });
 
-  test('Can signup', async () => {
-    let res: GraphQLResponse;
-    res = await queryUsers(client);
-    expect(res.data.users.length).toBe(0);
+  describe('Signup', () => {
 
-    res = await client.mutate({
-      mutation: gql`mutation { signup(username:"test3", password: "test3") { username }}`
-    })
-    expect(res.data.signup.username).toBe("test3");
+    test('Can signup', async () => {
+      let res: GraphQLResponse;
+      res = await queryUsers(client);
+      expect(res.data.users.length).toBe(0);
 
-    res = await queryUsers(client);
-    expect(res.data.users.length).toBe(1);
+      res = await client.mutate({
+        mutation: gql`mutation { signup(username:"test3", password: "test3") { username }}`
+      })
+      expect(res.data.signup.username).toBe("test3");
+
+      res = await queryUsers(client);
+      expect(res.data.users.length).toBe(1);
+    });
+
+    test(`Fails with duplicate usernames with an error`, async () => {
+      /*
+      We start with zero users. Try to add users twice. Then check # users.
+      */
+      let res: GraphQLResponse;
+      res = await queryUsers(client);
+      expect(res.data.users.length).toBe(0);
+
+      res = await client.mutate({
+        mutation: gql`mutation { signup(username:"test3", password: "test3") { username }}`
+      })
+      expect(res.data.signup.username).toBe("test3");
+
+      res = await client.mutate({
+        mutation: gql`mutation { signup(username:"test3", password: "test3") { username }}`
+      });
+      expect(res.errors[0].message).toContain("username");
+      expect(res.errors[0].extensions.code).toBe('BAD_USER_INPUT');
+
+      res = await queryUsers(client);
+      expect(res.data.users.length).not.toBe(2);
+    });
+
+    test(`Fails with no username / password with an error`, async () => {
+      // First Attempt
+
+      let res: GraphQLResponse;
+      res = await queryUsers(client);
+      expect(res.data.users.length).toBe(0);
+
+      res = await client.mutate({
+        mutation: gql`mutation { signup(username:"", password: "") { username }}`
+      });
+
+      expect(res.data).toBeUndefined();
+      expect(res.errors.length).toBe(2);
+      expect(res.errors[0].message).toContain(SCALAR_NON_BLANK_STRING_VALUE_ERROR_MSG);
+
+      res = await queryUsers(client);
+      expect(res.data.users.length).toBe(0);
+
+      // Second Attempt
+
+      res = await client.mutate({
+        mutation: gql`mutation { signup(username:"asdf", password: "") { username }}`
+      });
+
+      expect(res.data).toBeUndefined();
+      expect(res.errors.length).toBe(1);
+      expect(res.errors[0].message).toContain(SCALAR_NON_BLANK_STRING_VALUE_ERROR_MSG);
+
+      res = await queryUsers(client);
+      expect(res.data.users.length).toBe(0);
+
+      // Third Attempt
+
+      res = await client.mutate({
+        mutation: gql`mutation { signup(username:"", password: "asdf") { username }}`
+      });
+
+      expect(res.data).toBeUndefined();
+      expect(res.errors.length).toBe(1);
+      expect(res.errors[0].message).toContain(SCALAR_NON_BLANK_STRING_VALUE_ERROR_MSG);
+
+      res = await queryUsers(client);
+      expect(res.data.users.length).toBe(0);
+    });
   });
 
-  test(`Signup with duplicate usernames should fail with an error`, async () => {
-    /*
-    We start with zero users. Try to add users twice. Then check # users.
-    */
-    let res: GraphQLResponse;
-    res = await queryUsers(client);
-    expect(res.data.users.length).toBe(0);
-
-    res = await client.mutate({
-      mutation: gql`mutation { signup(username:"test3", password: "test3") { username }}`
-    })
-    expect(res.data.signup.username).toBe("test3");
-
-    res = await client.mutate({
-      mutation: gql`mutation { signup(username:"test3", password: "test3") { username }}`
-    });
-    expect(res.errors[0].message).toContain("username");
-    expect(res.errors[0].extensions.code).toBe('BAD_USER_INPUT');
-
-    res = await queryUsers(client);
-    expect(res.data.users.length).not.toBe(2);
-  });
-
-  test(`Signup with no username / password should fail with an error`, async () => {
-    // First Attempt
-
-    let res: GraphQLResponse;
-    res = await queryUsers(client);
-    expect(res.data.users.length).toBe(0);
-
-    res = await client.mutate({
-      mutation: gql`mutation { signup(username:"", password: "") { username }}`
-    });
-
-    expect(res.data).toBeUndefined();
-    expect(res.errors.length).toBe(2);
-    expect(res.errors[0].message).toContain(SCALAR_NON_BLANK_STRING_VALUE_ERROR_MSG);
-
-    res = await queryUsers(client);
-    expect(res.data.users.length).toBe(0);
-
-    // Second Attempt
-
-    res = await client.mutate({
-      mutation: gql`mutation { signup(username:"asdf", password: "") { username }}`
-    });
-
-    expect(res.data).toBeUndefined();
-    expect(res.errors.length).toBe(1);
-    expect(res.errors[0].message).toContain(SCALAR_NON_BLANK_STRING_VALUE_ERROR_MSG);
-
-    res = await queryUsers(client);
-    expect(res.data.users.length).toBe(0);
-
-    // Third Attempt
-
-    res = await client.mutate({
-      mutation: gql`mutation { signup(username:"", password: "asdf") { username }}`
-    });
-
-    expect(res.data).toBeUndefined();
-    expect(res.errors.length).toBe(1);
-    expect(res.errors[0].message).toContain(SCALAR_NON_BLANK_STRING_VALUE_ERROR_MSG);
-
-    res = await queryUsers(client);
-    expect(res.data.users.length).toBe(0);
-  });
 });

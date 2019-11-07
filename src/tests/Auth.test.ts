@@ -4,6 +4,7 @@ import { GraphQLResponse } from 'graphql-extensions';
 import { Connection } from 'typeorm';
 import createTestServer, { getTestDatabaseInstance } from './TestServer';
 import { UserAlreadyExistsError } from '../services/Auth';
+import { SCALAR_NON_BLANK_STRING_VALUE_ERROR_MSG } from '../resolvers/Scalars';
 
 let server: ApolloServer;
 let client: ApolloServerTestClient;
@@ -62,5 +63,50 @@ describe('Auth', () => {
 
     res = await queryUsers(client);
     expect(res.data.users.length).not.toBe(2);
+  });
+
+  test(`Signup with no username / password should fail with an error`, async () => {
+    // First Attempt
+
+    let res: GraphQLResponse;
+    res = await queryUsers(client);
+    expect(res.data.users.length).toBe(0);
+
+    res = await client.mutate({
+      mutation: gql`mutation { signup(username:"", password: "") { username }}`
+    });
+
+    expect(res.data).toBeUndefined();
+    expect(res.errors.length).toBe(2);
+    expect(res.errors[0].message).toContain(SCALAR_NON_BLANK_STRING_VALUE_ERROR_MSG);
+
+    res = await queryUsers(client);
+    expect(res.data.users.length).toBe(0);
+
+    // Second Attempt
+
+    res = await client.mutate({
+      mutation: gql`mutation { signup(username:"asdf", password: "") { username }}`
+    });
+
+    expect(res.data).toBeUndefined();
+    expect(res.errors.length).toBe(1);
+    expect(res.errors[0].message).toContain(SCALAR_NON_BLANK_STRING_VALUE_ERROR_MSG);
+
+    res = await queryUsers(client);
+    expect(res.data.users.length).toBe(0);
+
+    // Third Attempt
+
+    res = await client.mutate({
+      mutation: gql`mutation { signup(username:"", password: "asdf") { username }}`
+    });
+
+    expect(res.data).toBeUndefined();
+    expect(res.errors.length).toBe(1);
+    expect(res.errors[0].message).toContain(SCALAR_NON_BLANK_STRING_VALUE_ERROR_MSG);
+
+    res = await queryUsers(client);
+    expect(res.data.users.length).toBe(0);
   });
 });

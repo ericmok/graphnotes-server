@@ -1,3 +1,5 @@
+scalar NonBlankString
+
 type Token {
   token: String!
 }
@@ -13,5 +15,5 @@ type Query {
 
 type Mutation {
   _: Boolean
-  signup(username: String!, password: String!): User
+  signup(username: NonBlankString!, password: NonBlankString!): User
 }

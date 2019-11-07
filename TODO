@@ -6,7 +6,11 @@ Auth Signup Mutation:
         Move to service instead?
     ☐ Add username, password validations to User entity? @created(19-11-05 13:19)
     ✔ Add setter to User entity constructor @created(19-11-05 13:11) @done(19-11-05 13:35)
-    ☐ Add tests for signup @created(19-11-05 13:37)
+    ✔ Add tests for signup @created(19-11-05 13:37) @done(19-11-06 10:38)
+    ✔ Handle empty strings in input like signup @created(19-11-06 13:05) @done(19-11-06 21:23)
+    ☐ Bcrypt password @created(19-11-06 13:05)
+    ☐ Use jwt to sign user id and expiration instead of separate token database store @created(19-11-06 13:05)
+    ☐ Username, Password minLength validation @created(19-11-06 13:41)
 
 Database:
     ☐ Handle when server starts with no database @created(19-11-06 09:10)

@@ -1,6 +1,9 @@
+import * as bcrypt from 'bcrypt';
 import { getManager } from 'typeorm';
 import { UserInputError, AuthenticationError } from 'apollo-server';
 import { User } from '../entity/User';
+
+const NUMBER_ROUNDS = 12;
 
 export class UserAlreadyExistsError extends UserInputError {
   constructor() {
@@ -26,7 +29,10 @@ const Auth = {
     }
 
     try {
-      const newUser = new User({ username, password });
+      const newUser = new User({
+        username, 
+        password: await bcrypt.hash(password, NUMBER_ROUNDS)
+      });
       const saveResult = await getManager().save(newUser);
       return saveResult;
     }
@@ -40,7 +46,8 @@ const Auth = {
       throw new AuthenticationError("Invalid user");
     }
 
-    if (user.password !== password) {
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) {
       throw new AuthenticationError("Invalid password");
     }
 

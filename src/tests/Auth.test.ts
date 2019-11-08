@@ -1,7 +1,8 @@
 import { createTestClient, ApolloServerTestClient } from 'apollo-server-testing';
-import { ApolloServer, gql } from 'apollo-server';
+import { ApolloServer, gql, AuthenticationError } from 'apollo-server';
 import { GraphQLResponse } from 'graphql-extensions';
 import { Connection } from 'typeorm';
+import { GQLToken } from '../generated/graphql';
 import createTestServer, { getTestDatabaseInstance } from './TestServer';
 import { UserAlreadyExistsError } from '../services/Auth';
 import { SCALAR_NON_BLANK_STRING_VALUE_ERROR_MSG } from '../resolvers/Scalars';
@@ -18,18 +19,18 @@ const queryUsers = async (client: ApolloServerTestClient) => {
 };
 
 describe('Auth', () => {
-  beforeEach(async () => {
-    testDatabase = await getTestDatabaseInstance();
-    await testDatabase.synchronize(true);
-    server = await createTestServer(testDatabase);
-    client = createTestClient(server);
-  });
-  afterEach(async () => {
-    server.stop();
-  });
 
   describe('Signup', () => {
-
+    beforeEach(async () => {
+      testDatabase = await getTestDatabaseInstance();
+      await testDatabase.synchronize(true);
+      server = await createTestServer(testDatabase);
+      client = createTestClient(server);
+    });
+    afterEach(async () => {
+      server.stop();
+    });
+  
     test('Can signup', async () => {
       let res: GraphQLResponse;
       res = await queryUsers(client);
@@ -113,4 +114,83 @@ describe('Auth', () => {
     });
   });
 
+
+  describe('Login', () => {
+
+    beforeAll(async () => {
+      
+      testDatabase = await getTestDatabaseInstance();
+      await testDatabase.synchronize(true);
+      server = await createTestServer(testDatabase);
+      client = createTestClient(server);
+    
+      let res: GraphQLResponse;
+      res = await queryUsers(client);
+      expect(res.data.users.length).toBe(0);
+
+      // Create User
+      res = await client.mutate({
+        mutation: gql`mutation { signup(username:"test", password: "test") { username }}`
+      });
+
+      res = await queryUsers(client);
+      expect(res.data.users.length).toBe(1);
+    });
+
+    afterAll(async () => {
+      server.stop();
+    });
+
+    test('Can Login and get Token', async () => {
+      let res: GraphQLResponse;
+      res = await client.mutate({
+        mutation: gql`mutation { login(username:"test", password: "test") { token }}`
+      });
+
+      expect(res.errors).toBeUndefined();
+      expect(res.data.login).toBeDefined();
+      expect(res.data.login.token).not.toBeNull();
+      expect(typeof res.data.login.token).toBe("string");
+      expect(res.data.login.token.length).toBeGreaterThan(1);
+    });
+
+    test('Errors out on wrong password', async () => {
+      let res: GraphQLResponse;
+
+      res = await client.mutate({
+        mutation: gql`mutation { login(username:"test", password: "asdf") { token }}`
+      });  
+
+      expect(res.data.login).toBeNull();
+      expect(res.errors.length).toBe(1);
+      expect(res.errors[0].extensions.code).toBe("UNAUTHENTICATED");
+    });
+
+    test('Errors out on empty password', async () => {
+      let res: GraphQLResponse;
+      // Empty Password
+      res = await client.mutate({
+        mutation: gql`mutation { login(username:"test", password: "") { token }}`
+      });
+
+      expect(res.data).not.toBeDefined();
+      expect(res.errors.length).toBe(1);
+      expect(res.errors[0].message).toContain("empty");
+    });
+
+    test('Errors out on empty username', async () => {
+      let res: GraphQLResponse;
+      // Empty Username
+      res = await client.mutate({
+        mutation: gql`mutation { login(username:"", password: "asdf") { token }}`
+      });
+
+       
+
+      expect(res.data).not.toBeDefined();
+      expect(res.errors.length).toBe(1);
+      expect(res.errors[0].message).toContain("empty");
+    });
+
+  });
 });

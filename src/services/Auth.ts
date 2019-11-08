@@ -1,5 +1,5 @@
 import { getManager } from 'typeorm';
-import { UserInputError } from 'apollo-server';
+import { UserInputError, AuthenticationError } from 'apollo-server';
 import { User } from '../entity/User';
 
 export class UserAlreadyExistsError extends UserInputError {
@@ -32,6 +32,20 @@ const Auth = {
     }
     catch (err) {
       throw new UserCreationDatabaseError(err);
+    }
+  },
+  async login(username: string, password: string) {
+    const user = await getManager().findOne(User, { username });
+    if (!user) {
+      throw new AuthenticationError("Invalid user");
+    }
+
+    if (user.password !== password) {
+      throw new AuthenticationError("Invalid password");
+    }
+
+    return {
+      token: "asdf"
     }
   }
 };

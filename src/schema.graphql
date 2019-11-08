@@ -16,4 +16,5 @@ type Query {
 type Mutation {
   _: Boolean
   signup(username: NonBlankString!, password: NonBlankString!): User
+  login(username: NonBlankString!, password: NonBlankString!): Token
 }

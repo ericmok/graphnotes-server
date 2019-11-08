@@ -19,6 +19,7 @@
       "@graphql-codegen/typescript-resolvers": "1.8.3",
       "@types/bcrypt": "^3.0.0",
       "@types/jest": "^24.0.21",
+      "@types/jsonwebtoken": "^8.3.5",
       "@types/node": "^8.0.29",
       "apollo-server-testing": "^2.9.7",
       "jest": "^24.9.0",
@@ -30,6 +31,7 @@
    "dependencies": {
       "apollo-server": "^2.9.7",
       "bcrypt": "^3.0.6",
+      "jsonwebtoken": "^8.5.1",
       "mongodb": "^3.3.3",
       "reflect-metadata": "^0.1.10",
       "typeorm": "^0.2.20"

@@ -1,9 +1,15 @@
 import * as bcrypt from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
 import { getManager } from 'typeorm';
 import { UserInputError, AuthenticationError } from 'apollo-server';
 import { User } from '../entity/User';
 
 const NUMBER_ROUNDS = 12;
+let APP_SECRET = process.env.APP_SECRET || Math.random().toString();
+
+if (!process.env.APP_SECRET) {
+  console.warn("No APP_SECRET env variable supplied! Remember to provide one in production.");
+}
 
 export class UserAlreadyExistsError extends UserInputError {
   constructor() {
@@ -52,8 +58,14 @@ const Auth = {
     }
 
     return {
-      token: "asdf"
+      token: jwt.sign({ 
+        username,
+        startDate: new Date()
+      }, APP_SECRET)
     }
+  },
+  async isLoggedIn() {
+    return false;
   }
 };
 

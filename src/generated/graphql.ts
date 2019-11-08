@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { Context } from '../utils';
 export type Maybe<T> = T | null;
 export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } & { [P in K]-?: NonNullable<T[P]> };
@@ -9,6 +9,7 @@ export type Scalars = {
   Boolean: boolean,
   Int: number,
   Float: number,
+  NonBlankString: any,
 };
 
 
@@ -28,13 +29,21 @@ export type GQLMutation = {
    __typename?: 'Mutation',
   _?: Maybe<Scalars['Boolean']>,
   signup?: Maybe<GQLUser>,
+  login?: Maybe<GQLToken>,
 };
 
 
 export type GQLMutationSignupArgs = {
-  username: Scalars['String'],
-  password: Scalars['String']
+  username: Scalars['NonBlankString'],
+  password: Scalars['NonBlankString']
 };
+
+
+export type GQLMutationLoginArgs = {
+  username: Scalars['NonBlankString'],
+  password: Scalars['NonBlankString']
+};
+
 
 export type GQLQuery = {
    __typename?: 'Query',
@@ -128,6 +137,7 @@ export type GQLResolversTypes = {
   User: ResolverTypeWrapper<GQLUser>,
   String: ResolverTypeWrapper<Scalars['String']>,
   Mutation: ResolverTypeWrapper<{}>,
+  NonBlankString: ResolverTypeWrapper<Scalars['NonBlankString']>,
   Token: ResolverTypeWrapper<GQLToken>,
   AdditionalEntityFields: GQLAdditionalEntityFields,
 };
@@ -139,6 +149,7 @@ export type GQLResolversParentTypes = {
   User: GQLUser,
   String: Scalars['String'],
   Mutation: {},
+  NonBlankString: Scalars['NonBlankString'],
   Token: GQLToken,
   AdditionalEntityFields: GQLAdditionalEntityFields,
 };
@@ -165,7 +176,12 @@ export type GQLMapDirectiveResolver<Result, Parent, ContextType = Context, Args 
 export type GQLMutationResolvers<ContextType = Context, ParentType extends GQLResolversParentTypes['Mutation'] = GQLResolversParentTypes['Mutation']> = {
   _?: Resolver<Maybe<GQLResolversTypes['Boolean']>, ParentType, ContextType>,
   signup?: Resolver<Maybe<GQLResolversTypes['User']>, ParentType, ContextType, RequireFields<GQLMutationSignupArgs, 'username' | 'password'>>,
+  login?: Resolver<Maybe<GQLResolversTypes['Token']>, ParentType, ContextType, RequireFields<GQLMutationLoginArgs, 'username' | 'password'>>,
 };
+
+export interface GQLNonBlankStringScalarConfig extends GraphQLScalarTypeConfig<GQLResolversTypes['NonBlankString'], any> {
+  name: 'NonBlankString'
+}
 
 export type GQLQueryResolvers<ContextType = Context, ParentType extends GQLResolversParentTypes['Query'] = GQLResolversParentTypes['Query']> = {
   _?: Resolver<Maybe<GQLResolversTypes['Boolean']>, ParentType, ContextType>,
@@ -182,6 +198,7 @@ export type GQLUserResolvers<ContextType = Context, ParentType extends GQLResolv
 
 export type GQLResolvers<ContextType = Context> = {
   Mutation?: GQLMutationResolvers<ContextType>,
+  NonBlankString?: GraphQLScalarType,
   Query?: GQLQueryResolvers<ContextType>,
   Token?: GQLTokenResolvers<ContextType>,
   User?: GQLUserResolvers<ContextType>,

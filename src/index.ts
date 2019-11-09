@@ -11,7 +11,7 @@ createConnection().then(async connection => {
       typeDefs: gql(fs.readFileSync(__dirname.concat('/schema.graphql'), 'utf8')),
       resolvers,
       context: request => ({
-        ...request,
+        request,
         db: connection
       })
     });

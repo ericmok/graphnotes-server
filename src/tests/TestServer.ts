@@ -37,13 +37,14 @@ export const getTestDatabaseInstance = async() => {
 }
 
 
-const createTestServer = async (testDatabase: any) => {
-
+const createTestServer = async (testDatabase: any, testHeaders: any = {}) => {
   let server = new ApolloServer({
     typeDefs: gql(fs.readFileSync(__dirname.concat('/../schema.graphql'), 'utf8')),
     resolvers,
     context: request => ({
-      ...request,
+      request: {req: {
+        headers: testHeaders}
+      },
       db: testDatabase
     })
   });

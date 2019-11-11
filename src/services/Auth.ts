@@ -1,11 +1,14 @@
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
+import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 import { getManager } from 'typeorm';
 import { UserInputError, AuthenticationError } from 'apollo-server';
 import { User } from '../entity/User';
 
 const NUMBER_ROUNDS = 12;
-let APP_SECRET = process.env.APP_SECRET || Math.random().toString();
+const DEFAULT_SECRET = "h4-98po"
+let APP_SECRET = process.env.APP_SECRET || DEFAULT_SECRET;
+const TOKEN_EXPIRY_TIME = '4s';
 
 if (!process.env.APP_SECRET) {
   console.warn("No APP_SECRET env variable supplied! Remember to provide one in production.");
@@ -24,6 +27,10 @@ export class UserCreationDatabaseError extends Error {
   }
 }
 
+export interface TokenPayload {
+  username: string
+}
+
 const Auth = {
   async signup(username: string, password: string) {
     const existingUsers = await getManager().find(User, {
@@ -36,7 +43,7 @@ const Auth = {
 
     try {
       const newUser = new User({
-        username, 
+        username,
         password: await bcrypt.hash(password, NUMBER_ROUNDS)
       });
       const saveResult = await getManager().save(newUser);
@@ -58,13 +65,28 @@ const Auth = {
     }
 
     return {
-      token: jwt.sign({ 
+      token: jwt.sign({
         username,
-        startDate: new Date()
-      }, APP_SECRET)
+      }, APP_SECRET, {
+        expiresIn: TOKEN_EXPIRY_TIME
+      })
     }
   },
-  async isLoggedIn() {
+  async isLoggedIn(tokenString) {
+    try {
+      if (jwt.verify(tokenString, APP_SECRET)) {
+        return true;
+      }
+    }
+    catch (err) {
+      if (err instanceof JsonWebTokenError) {
+        return false;
+      }
+      if (err instanceof TokenExpiredError) {
+        return false;
+      }
+      throw err;
+    }
     return false;
   }
 };
@@ -74,4 +96,5 @@ export default Auth;
 /*
 References
 https://stackoverflow.com/questions/51860043/javascript-es6-typeerror-class-constructor-client-cannot-be-invoked-without-ne
+https://github.com/auth0/node-jsonwebtoken
 */

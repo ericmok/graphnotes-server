@@ -30,7 +30,7 @@ describe('Auth', () => {
     afterEach(async () => {
       server.stop();
     });
-  
+
     test('Can signup', async () => {
       let res: GraphQLResponse;
       res = await queryUsers(client);
@@ -118,12 +118,12 @@ describe('Auth', () => {
   describe('Login', () => {
 
     beforeAll(async () => {
-      
+
       testDatabase = await getTestDatabaseInstance();
       await testDatabase.synchronize(true);
       server = await createTestServer(testDatabase);
       client = createTestClient(server);
-    
+
       let res: GraphQLResponse;
       res = await queryUsers(client);
       expect(res.data.users.length).toBe(0);
@@ -159,7 +159,7 @@ describe('Auth', () => {
 
       res = await client.mutate({
         mutation: gql`mutation { login(username:"test", password: "asdf") { token }}`
-      });  
+      });
 
       expect(res.data.login).toBeNull();
       expect(res.errors.length).toBe(1);
@@ -185,7 +185,7 @@ describe('Auth', () => {
         mutation: gql`mutation { login(username:"", password: "asdf") { token }}`
       });
 
-       
+
 
       expect(res.data).not.toBeDefined();
       expect(res.errors.length).toBe(1);
@@ -193,4 +193,95 @@ describe('Auth', () => {
     });
 
   });
+
+  describe('IsLoggedIn', () => {
+    beforeAll(async () => {
+      testDatabase = await getTestDatabaseInstance();
+      await testDatabase.synchronize(true);
+      server = await createTestServer(testDatabase, {
+      });
+      client = createTestClient(server);
+
+      let res: GraphQLResponse;
+
+      // Signup
+      res = await client.mutate({
+        mutation: gql`mutation { signup(username:"test", password: "test") { username }}`
+      });
+
+      res = await queryUsers(client);
+      expect(res.data.users.length).toBe(1);
+    });
+
+    test('Can test if is logged in', async () => {
+      let res: GraphQLResponse;
+
+      // Login
+      res = await client.mutate({
+        mutation: gql`mutation { login(username:"test", password: "test") { token }}`
+      });
+
+      server = await createTestServer(testDatabase, {
+        'authorization': res.data.login.token
+      });
+      client = createTestClient(server);
+
+      // Test if logged in
+      res = await client.query({
+        query: gql`query {isLoggedIn}`
+      });
+
+      expect(res.data.isLoggedIn).toBe(true);
+      expect(res.errors).toBeUndefined();
+    });
+
+    test('Returns false when no token', async () => {
+      let res: GraphQLResponse;
+      // Login
+      res = await client.mutate({
+        mutation: gql`mutation { login(username:"test", password: "test") { token }}`
+      });
+
+      server = await createTestServer(testDatabase, {
+      });
+      client = createTestClient(server);
+
+      // Test if logged in
+      res = await client.query({
+        query: gql`query {isLoggedIn}`
+      });
+
+      expect(res.data.isLoggedIn).toBe(false);
+      expect(res.errors).toBeUndefined();
+    });
+
+    test('Returns false when wrong token', async () => {
+      let res: GraphQLResponse;
+      // Login
+      res = await client.mutate({
+        mutation: gql`mutation { login(username:"test", password: "test") { token }}`
+      });
+
+      server = await createTestServer(testDatabase, {
+        'authorization': 'wrong'
+      });
+      client = createTestClient(server);
+
+      // Test if logged in
+      res = await client.query({
+        query: gql`query {isLoggedIn}`
+      });
+
+      expect(res.data.isLoggedIn).toBe(false);
+      expect(res.errors).toBeUndefined();
+    });
+
+    test.todo('Returns false when token expires');
+  });
+
 });
+
+/*
+References:
+https://github.com/apollographql/apollo-server/issues/2277
+*/

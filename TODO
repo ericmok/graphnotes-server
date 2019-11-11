@@ -8,9 +8,11 @@ Auth Signup Mutation:
     ✔ Add setter to User entity constructor @created(19-11-05 13:11) @done(19-11-05 13:35)
     ✔ Add tests for signup @created(19-11-05 13:37) @done(19-11-06 10:38)
     ✔ Handle empty strings in input like signup @created(19-11-06 13:05) @done(19-11-06 21:23)
-    ☐ Bcrypt password @created(19-11-06 13:05)
-    ☐ Use jwt to sign user id and expiration instead of separate token database store @created(19-11-06 13:05)
+    ✔ Bcrypt password @created(19-11-06 13:05) @done(19-11-10 14:41)
+    ✔ Use jwt for signup and login instead of separate token database store @done(19-11-10 14:40)
+    ☐ Test jwt expiration @created(19-11-06 13:05) @created(19-11-10 14:40)
     ☐ Username, Password minLength validation @created(19-11-06 13:41)
+    ☐ Implement logging of Auth errors but make it opaque to end users @created(19-11-10 18:15)
 
 Database:
     ☐ Handle when server starts with no database @created(19-11-06 09:10)
@@ -18,3 +20,4 @@ Database:
     ☐ Restart database in testing @created(19-11-06 09:11) @started(19-11-06 09:11)
     ☐ Handle database connections when server starts/restarts and AlreadyHasActiveConnectionError @created(19-11-06 09:12)
     ✔ Change Errors to ApolloErrors @created(19-11-06 09:49) @done(19-11-06 10:36)
+    ☐ Make tests faster. Database syncing in tests seem to be slow. @created(19-11-10 14:39)

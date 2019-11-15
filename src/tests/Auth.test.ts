@@ -6,17 +6,12 @@ import { GQLToken } from '../generated/graphql';
 import createTestServer, { getTestDatabaseInstance } from './TestServer';
 import { UserAlreadyExistsError } from '../services/Auth';
 import { SCALAR_NON_BLANK_STRING_VALUE_ERROR_MSG } from '../resolvers/Scalars';
+import { queryUsers, signupUser, loginUser } from './TestQueries';
 
 let server: ApolloServer;
 let client: ApolloServerTestClient;
 let testDatabase: Connection;
 
-const GET_USERS = gql`query { users { username } }`;
-const queryUsers = async (client: ApolloServerTestClient) => {
-  return await client.query({
-    query: GET_USERS
-  });
-};
 
 describe('Auth', () => {
 
@@ -36,9 +31,7 @@ describe('Auth', () => {
       res = await queryUsers(client);
       expect(res.data.users.length).toBe(0);
 
-      res = await client.mutate({
-        mutation: gql`mutation { signup(username:"test3", password: "test3") { username }}`
-      })
+      res = await signupUser(client, "test3", "test3");
       expect(res.data.signup.username).toBe("test3");
 
       res = await queryUsers(client);
@@ -53,14 +46,10 @@ describe('Auth', () => {
       res = await queryUsers(client);
       expect(res.data.users.length).toBe(0);
 
-      res = await client.mutate({
-        mutation: gql`mutation { signup(username:"test3", password: "test3") { username }}`
-      })
+      res = await signupUser(client, "test3", "test3");
       expect(res.data.signup.username).toBe("test3");
 
-      res = await client.mutate({
-        mutation: gql`mutation { signup(username:"test3", password: "test3") { username }}`
-      });
+      res = await signupUser(client, "test3", "test3");
       expect(res.errors[0].message).toContain("username");
       expect(res.errors[0].extensions.code).toBe('BAD_USER_INPUT');
 
@@ -75,9 +64,7 @@ describe('Auth', () => {
       res = await queryUsers(client);
       expect(res.data.users.length).toBe(0);
 
-      res = await client.mutate({
-        mutation: gql`mutation { signup(username:"", password: "") { username }}`
-      });
+      res = await signupUser(client, "", "");
 
       expect(res.data).toBeUndefined();
       expect(res.errors.length).toBe(2);
@@ -88,9 +75,7 @@ describe('Auth', () => {
 
       // Second Attempt
 
-      res = await client.mutate({
-        mutation: gql`mutation { signup(username:"asdf", password: "") { username }}`
-      });
+      res = await signupUser(client, "asdf", "");
 
       expect(res.data).toBeUndefined();
       expect(res.errors.length).toBe(1);
@@ -101,9 +86,7 @@ describe('Auth', () => {
 
       // Third Attempt
 
-      res = await client.mutate({
-        mutation: gql`mutation { signup(username:"", password: "asdf") { username }}`
-      });
+      res = await signupUser(client, "", "asdf");
 
       expect(res.data).toBeUndefined();
       expect(res.errors.length).toBe(1);
@@ -129,9 +112,7 @@ describe('Auth', () => {
       expect(res.data.users.length).toBe(0);
 
       // Create User
-      res = await client.mutate({
-        mutation: gql`mutation { signup(username:"test", password: "test") { username }}`
-      });
+      res = await signupUser(client, "test", "test");
 
       res = await queryUsers(client);
       expect(res.data.users.length).toBe(1);
@@ -143,9 +124,8 @@ describe('Auth', () => {
 
     test('Can Login and get Token', async () => {
       let res: GraphQLResponse;
-      res = await client.mutate({
-        mutation: gql`mutation { login(username:"test", password: "test") { token }}`
-      });
+
+      res = await loginUser(client, "test", "test");
 
       expect(res.errors).toBeUndefined();
       expect(res.data.login).toBeDefined();
@@ -157,9 +137,7 @@ describe('Auth', () => {
     test('Errors out on wrong password', async () => {
       let res: GraphQLResponse;
 
-      res = await client.mutate({
-        mutation: gql`mutation { login(username:"test", password: "asdf") { token }}`
-      });
+      res = await loginUser(client, "test", "asdf");
 
       expect(res.data.login).toBeNull();
       expect(res.errors.length).toBe(1);
@@ -168,10 +146,9 @@ describe('Auth', () => {
 
     test('Errors out on empty password', async () => {
       let res: GraphQLResponse;
+
       // Empty Password
-      res = await client.mutate({
-        mutation: gql`mutation { login(username:"test", password: "") { token }}`
-      });
+      res = await loginUser(client, "test", "");
 
       expect(res.data).not.toBeDefined();
       expect(res.errors.length).toBe(1);
@@ -180,12 +157,9 @@ describe('Auth', () => {
 
     test('Errors out on empty username', async () => {
       let res: GraphQLResponse;
+
       // Empty Username
-      res = await client.mutate({
-        mutation: gql`mutation { login(username:"", password: "asdf") { token }}`
-      });
-
-
+      res = await loginUser(client, "", "asdf");
 
       expect(res.data).not.toBeDefined();
       expect(res.errors.length).toBe(1);
@@ -205,9 +179,7 @@ describe('Auth', () => {
       let res: GraphQLResponse;
 
       // Signup
-      res = await client.mutate({
-        mutation: gql`mutation { signup(username:"test", password: "test") { username }}`
-      });
+      res = await signupUser(client, "test", "test");
 
       res = await queryUsers(client);
       expect(res.data.users.length).toBe(1);
@@ -217,9 +189,7 @@ describe('Auth', () => {
       let res: GraphQLResponse;
 
       // Login
-      res = await client.mutate({
-        mutation: gql`mutation { login(username:"test", password: "test") { token }}`
-      });
+      res = await loginUser(client, "test", "test");
 
       server = await createTestServer(testDatabase, {
         'authorization': res.data.login.token
@@ -238,9 +208,7 @@ describe('Auth', () => {
     test('Returns false when no token', async () => {
       let res: GraphQLResponse;
       // Login
-      res = await client.mutate({
-        mutation: gql`mutation { login(username:"test", password: "test") { token }}`
-      });
+      res = await loginUser(client, "test", "test");
 
       server = await createTestServer(testDatabase, {
       });
@@ -258,9 +226,7 @@ describe('Auth', () => {
     test('Returns false when wrong token', async () => {
       let res: GraphQLResponse;
       // Login
-      res = await client.mutate({
-        mutation: gql`mutation { login(username:"test", password: "test") { token }}`
-      });
+      res = await loginUser(client, "test", "test");
 
       server = await createTestServer(testDatabase, {
         'authorization': 'wrong'

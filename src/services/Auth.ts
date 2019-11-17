@@ -72,7 +72,7 @@ const Auth = {
       })
     }
   },
-  async isLoggedIn(tokenString) {
+  async isLoggedIn(tokenString: string) {
     try {
       if (jwt.verify(tokenString, APP_SECRET)) {
         return true;

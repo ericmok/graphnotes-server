@@ -1,4 +1,4 @@
-Auth Signup Mutation:
+Auth:
     ☐ Move validation methods to User Entity? @created(19-11-05 13:01)
     ✔ Create GQL Prefix for Types for User @created(19-11-05 13:05) @done(19-11-05 14:04)
         So that GQL types can be differentiated from Entity types
@@ -14,6 +14,10 @@ Auth Signup Mutation:
     ☐ Username, Password minLength validation @created(19-11-06 13:41)
     ☐ Implement logging of Auth errors but make it opaque to end users @created(19-11-10 18:15)
 
+Graphs:
+    ☐ Add automatically generated graph slugs @created(19-11-16 18:44)
+    ☐ Use human readable ids for slugs @created(19-11-16 18:44)
+
 Database:
     ☐ Handle when server starts with no database @created(19-11-06 09:10)
     ☐ Guard test database clearing in non dev mode? @created(19-11-06 09:11)
@@ -21,3 +25,8 @@ Database:
     ☐ Handle database connections when server starts/restarts and AlreadyHasActiveConnectionError @created(19-11-06 09:12)
     ✔ Change Errors to ApolloErrors @created(19-11-06 09:49) @done(19-11-06 10:36)
     ☐ Make tests faster. Database syncing in tests seem to be slow. @created(19-11-10 14:39)
+
+Refactors:
+    ☐ Should testQueries be co-located with resolvers? @created(19-11-16 18:43)
+    ☐ DRY up test server setup @created(19-11-16 18:43)
+    ☐ Figure out where auth and permissions are located. Co-locate auth services and endpoints? @created(19-11-16 20:15)

@@ -1,5 +1,9 @@
 scalar NonBlankString
 
+###############
+# Auth
+###############
+
 type Token {
   token: String!
 }
@@ -18,4 +22,41 @@ type Mutation {
   _: Boolean
   signup(username: NonBlankString!, password: NonBlankString!): User
   login(username: NonBlankString!, password: NonBlankString!): Token
+}
+
+###############
+# Graph
+###############
+
+type Vertex {
+  user: User!
+  content: String!
+  components: [String]!
+}
+
+type Edge {
+  user: User!
+  src: Vertex!
+  dst: Vertex!
+}
+
+type TraversalVertex {
+  parent: TraversalVertex
+  collapsed: Boolean!
+  vertex: Vertex!
+  children: [TraversalVertex]!
+}
+
+type Graph {
+  user: User!
+  root: Vertex
+  traversalRoot: TraversalVertex
+}
+
+extend type Query {
+  graphs(username: String): Boolean
+}
+
+extend type Mutation {
+  createGraph(name: String): Graph
 }

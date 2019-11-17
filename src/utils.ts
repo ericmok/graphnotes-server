@@ -5,7 +5,7 @@ export interface Context {
   db: Connection
 }
 
-export const getTokenFromContext: (context: Context) => string | null = (context: Context) => {
+export const getTokenFromContext: (context: Context) => string = (context: Context) => {
   const authHeader = context.request.req.headers['authorization'];
-  return (authHeader === undefined) ? null : authHeader;
+  return (authHeader === undefined) ? "" : authHeader;
 }

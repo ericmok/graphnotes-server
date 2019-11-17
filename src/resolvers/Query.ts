@@ -12,11 +12,6 @@ export const Query: GQLQueryResolvers = {
   },
   async isLoggedIn(root, args, context) {
     const token = getTokenFromContext(context);
-    if (token === null) {
-      return false;
-    }
-    else {
-      return AuthService.isLoggedIn(token);
-    }
+    return AuthService.isLoggedIn(token);
   }
 }

@@ -2,6 +2,7 @@ import { ObjectID } from "typeorm";
 import { GQLQueryResolvers } from "../generated/graphql";
 import { User } from "../entity/User";
 import AuthService from "../services/Auth";
+import { getTokenFromContext } from '../utils';
 
 export const Query: GQLQueryResolvers = {
   users(root, args, context, info) {
@@ -10,11 +11,12 @@ export const Query: GQLQueryResolvers = {
     return users;
   },
   async isLoggedIn(root, args, context) {
-    if (context.request.req.headers['authorization'] === undefined) {
+    const token = getTokenFromContext(context);
+    if (token === null) {
       return false;
     }
-    
-    const authHeader = context.request.req.headers['authorization'];
-    return AuthService.isLoggedIn(authHeader);
+    else {
+      return AuthService.isLoggedIn(token);
+    }
   }
 }

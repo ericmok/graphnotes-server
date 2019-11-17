@@ -13,6 +13,7 @@ Auth:
     ☐ Test jwt expiration @created(19-11-06 13:05) @created(19-11-10 14:40)
     ☐ Username, Password minLength validation @created(19-11-06 13:41)
     ☐ Implement logging of Auth errors but make it opaque to end users @created(19-11-10 18:15)
+    ☐ Graphql Auth directives @created(19-11-16 20:22)
 
 Graphs:
     ☐ Add automatically generated graph slugs @created(19-11-16 18:44)

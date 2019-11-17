@@ -8,7 +8,7 @@ import { User } from '../entity/User';
 const NUMBER_ROUNDS = 12;
 const DEFAULT_SECRET = "h4-98po"
 let APP_SECRET = process.env.APP_SECRET || DEFAULT_SECRET;
-const TOKEN_EXPIRY_TIME = '4s';
+const TOKEN_EXPIRY_TIME = '1d';
 
 if (!process.env.APP_SECRET) {
   console.warn("No APP_SECRET env variable supplied! Remember to provide one in production.");

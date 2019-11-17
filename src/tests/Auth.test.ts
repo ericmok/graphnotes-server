@@ -261,8 +261,6 @@ describe('Auth', () => {
         query: gql`query { me { username } }`
       });
 
-      console.log(res.errors);
-
       expect(res.data.me).toBe(null);
       expect(res.errors.length).toBeGreaterThan(0);
 

@@ -3,6 +3,7 @@ import { createConnection, Connection } from 'typeorm';
 import { MongoQueryRunner } from 'typeorm/driver/mongodb/MongoQueryRunner';
 import { ApolloServer, gql } from 'apollo-server';
 import resolvers from '../resolvers/index';
+import { RequiresAuthDirective } from '../resolvers/Directives';
 
 let cachedConnection: Connection = null;
 
@@ -27,7 +28,7 @@ const createTestDatabase = async () => {
   return connection;
 };
 
-export const getTestDatabaseInstance = async() => {
+export const getTestDatabaseInstance = async () => {
   try {
     return await createTestDatabase();
   }
@@ -42,11 +43,16 @@ const createTestServer = async (testDatabase: any, testHeaders: any = {}) => {
     typeDefs: gql(fs.readFileSync(__dirname.concat('/../schema.graphql'), 'utf8')),
     resolvers,
     context: request => ({
-      request: {req: {
-        headers: testHeaders}
+      request: {
+        req: {
+          headers: testHeaders
+        }
       },
       db: testDatabase
-    })
+    }),
+    schemaDirectives: {
+      requiresAuth: RequiresAuthDirective
+    }
   });
 
   return server;

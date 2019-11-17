@@ -1,8 +1,10 @@
 import { Connection } from "typeorm";
+import { User } from './entity/User';
 
 export interface Context {
   request: any,
-  db: Connection
+  db: Connection,
+  user?: User
 }
 
 export const getTokenFromContext: (context: Context) => string = (context: Context) => {

@@ -20,6 +20,7 @@ export type Scalars = {
 
 
 
+
 export type GQLAdditionalEntityFields = {
   path?: Maybe<Scalars['String']>,
   type?: Maybe<Scalars['String']>,
@@ -204,6 +205,8 @@ export type GQLResolversParentTypes = {
   AdditionalEntityFields: GQLAdditionalEntityFields,
 };
 
+export type GQLRequiresAuthDirectiveResolver<Result, Parent, ContextType = Context, Args = {  }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
 export type GQLUnionDirectiveResolver<Result, Parent, ContextType = Context, Args = {   discriminatorField?: Maybe<Maybe<Scalars['String']>>,
   additionalFields?: Maybe<Maybe<Array<Maybe<GQLAdditionalEntityFields>>>> }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
@@ -288,6 +291,7 @@ export type GQLResolvers<ContextType = Context> = {
 
 
 export type GQLDirectiveResolvers<ContextType = Context> = {
+  requiresAuth?: GQLRequiresAuthDirectiveResolver<any, any, ContextType>,
   union?: GQLUnionDirectiveResolver<any, any, ContextType>,
   abstractEntity?: GQLAbstractEntityDirectiveResolver<any, any, ContextType>,
   entity?: GQLEntityDirectiveResolver<any, any, ContextType>,

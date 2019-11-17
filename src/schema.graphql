@@ -1,5 +1,7 @@
 scalar NonBlankString
 
+directive @requiresAuth on FIELD_DEFINITION
+
 ###############
 # Auth
 ###############
@@ -15,7 +17,7 @@ type User {
 type Query {
   _: Boolean
   users: [User]!
-  me: User
+  me: User @requiresAuth
 }
 
 type Mutation {

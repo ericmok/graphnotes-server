@@ -15,7 +15,7 @@ type User {
 type Query {
   _: Boolean
   users: [User]!
-  isLoggedIn: Boolean
+  me: User
 }
 
 type Mutation {

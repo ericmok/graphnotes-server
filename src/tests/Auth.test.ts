@@ -7,6 +7,7 @@ import createTestServer, { getTestDatabaseInstance } from './TestServer';
 import { UserAlreadyExistsError } from '../services/Auth';
 import { SCALAR_NON_BLANK_STRING_VALUE_ERROR_MSG } from '../resolvers/Scalars';
 import { queryUsers, signupUser, loginUser } from './TestQueries';
+import { JsonWebTokenError } from 'jsonwebtoken';
 
 let server: ApolloServer;
 let client: ApolloServerTestClient;
@@ -168,7 +169,7 @@ describe('Auth', () => {
 
   });
 
-  describe('IsLoggedIn', () => {
+  describe('me', () => {
     beforeAll(async () => {
       testDatabase = await getTestDatabaseInstance();
       await testDatabase.synchronize(true);
@@ -198,17 +199,36 @@ describe('Auth', () => {
 
       // Test if logged in
       res = await client.query({
-        query: gql`query {isLoggedIn}`
+        query: gql`query { me { username } }`
       });
 
-      expect(res.data.isLoggedIn).toBe(true);
+      expect(res.data.me.username).toBe("test");
       expect(res.errors).toBeUndefined();
     });
 
-    test('Returns false when no token', async () => {
+    test('Throws unauthenticated error with non string tokens', async () => {
       let res: GraphQLResponse;
-      // Login
-      res = await loginUser(client, "test", "test");
+
+      server = await createTestServer(testDatabase, {
+        'authorization': 1234
+      });
+      client = createTestClient(server);
+
+      // Test if logged in
+      res = await client.query({
+        query: gql`query { me { username } }`
+      });
+
+      expect(res.data.me).toBe(null);
+      expect(res.errors.length).toBeGreaterThan(0);
+
+      const error = res.errors[0];
+      expect(error.extensions.code).toBe("UNAUTHENTICATED");
+      expect(error.message).toContain('jwt must be a string');
+    });
+
+    test('Throws unauthenticated error when no token', async () => {
+      let res: GraphQLResponse;
 
       server = await createTestServer(testDatabase, {
       });
@@ -216,30 +236,39 @@ describe('Auth', () => {
 
       // Test if logged in
       res = await client.query({
-        query: gql`query {isLoggedIn}`
+        query: gql`query { me { username } }`
       });
 
-      expect(res.data.isLoggedIn).toBe(false);
-      expect(res.errors).toBeUndefined();
+      expect(res.data.me).toBe(null);
+      expect(res.errors.length).toBeGreaterThan(0);
+
+      const error = res.errors[0];
+      expect(error.extensions.code).toBe("UNAUTHENTICATED");
+      expect(error.message).toContain('jwt must be provided');
     });
 
-    test('Returns false when wrong token', async () => {
+    test('Throws unauthenticated error when wrong token', async () => {
       let res: GraphQLResponse;
-      // Login
       res = await loginUser(client, "test", "test");
 
       server = await createTestServer(testDatabase, {
-        'authorization': 'wrong'
+        'authorization': 'wrong' + res.data.login.token + 'wrong'
       });
       client = createTestClient(server);
 
       // Test if logged in
       res = await client.query({
-        query: gql`query {isLoggedIn}`
+        query: gql`query { me { username } }`
       });
 
-      expect(res.data.isLoggedIn).toBe(false);
-      expect(res.errors).toBeUndefined();
+      console.log(res.errors);
+
+      expect(res.data.me).toBe(null);
+      expect(res.errors.length).toBeGreaterThan(0);
+
+      const error = res.errors[0];
+      expect(error.extensions.code).toBe("UNAUTHENTICATED");
+      expect(error.message).toContain("invalid token");
     });
 
     test.todo('Returns false when token expires');

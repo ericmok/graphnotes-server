@@ -69,7 +69,7 @@ export type GQLQuery = {
    __typename?: 'Query',
   _?: Maybe<Scalars['Boolean']>,
   users: Array<Maybe<GQLUser>>,
-  isLoggedIn?: Maybe<Scalars['Boolean']>,
+  me?: Maybe<GQLUser>,
   graphs?: Maybe<Scalars['Boolean']>,
 };
 
@@ -249,7 +249,7 @@ export interface GQLNonBlankStringScalarConfig extends GraphQLScalarTypeConfig<G
 export type GQLQueryResolvers<ContextType = Context, ParentType extends GQLResolversParentTypes['Query'] = GQLResolversParentTypes['Query']> = {
   _?: Resolver<Maybe<GQLResolversTypes['Boolean']>, ParentType, ContextType>,
   users?: Resolver<Array<Maybe<GQLResolversTypes['User']>>, ParentType, ContextType>,
-  isLoggedIn?: Resolver<Maybe<GQLResolversTypes['Boolean']>, ParentType, ContextType>,
+  me?: Resolver<Maybe<GQLResolversTypes['User']>, ParentType, ContextType>,
   graphs?: Resolver<Maybe<GQLResolversTypes['Boolean']>, ParentType, ContextType, GQLQueryGraphsArgs>,
 };
 

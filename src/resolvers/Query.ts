@@ -10,8 +10,8 @@ export const Query: GQLQueryResolvers = {
     // console.log(users);
     return users;
   },
-  async isLoggedIn(root, args, context) {
+  async me(root, args, context) {
     const token = getTokenFromContext(context);
-    return AuthService.isLoggedIn(token);
+    return AuthService.validateToken(token);
   }
 }

@@ -2,6 +2,10 @@ scalar NonBlankString
 
 directive @requiresAuth on FIELD_DEFINITION
 
+interface Node {
+  id: ID!
+}
+
 ###############
 # Auth
 ###############
@@ -10,7 +14,8 @@ type Token {
   token: String!
 }
 
-type User {
+type User implements Node {
+  id: ID!
   username: String
 }
 
@@ -30,26 +35,30 @@ type Mutation {
 # Graph
 ###############
 
-type Vertex {
+type Vertex implements Node {
+  id: ID!
   user: User!
   content: String!
   components: [String]!
 }
 
-type Edge {
+type Arc implements Node {
+  id: ID!
   user: User!
   src: Vertex!
   dst: Vertex!
 }
 
-type TraversalVertex {
+type TraversalVertex implements Node {
+  id: ID!
   parent: TraversalVertex
   collapsed: Boolean!
   vertex: Vertex!
   children: [TraversalVertex]!
 }
 
-type Graph {
+type Graph implements Node {
+  id: ID!
   user: User!
   root: Vertex
   traversalRoot: TraversalVertex

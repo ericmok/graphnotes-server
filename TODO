@@ -32,3 +32,6 @@ Refactors:
     ☐ Should testQueries be co-located with resolvers? @created(19-11-16 18:43)
     ☐ DRY up test server setup @created(19-11-16 18:43)
     ☐ Figure out where auth and permissions are located. Co-locate auth services and endpoints? @created(19-11-16 20:15)
+
+General:
+    ☐ Add Node endpoint in the style of Relay Graphql spec @created(19-11-19 15:54)

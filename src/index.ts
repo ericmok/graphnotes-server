@@ -5,6 +5,7 @@ import "reflect-metadata";
 import { createConnection } from "typeorm";
 import { User } from "./entity/User";
 import { RequiresAuthDirective } from './resolvers/Directives';
+import { APP_SECRET } from './utils';
 
 createConnection().then(async connection => {
 
@@ -12,6 +13,7 @@ createConnection().then(async connection => {
     typeDefs: gql(fs.readFileSync(__dirname.concat('/schema.graphql'), 'utf8')),
     resolvers,
     context: request => ({
+      appSecret: APP_SECRET,
       request,
       db: connection
     }),

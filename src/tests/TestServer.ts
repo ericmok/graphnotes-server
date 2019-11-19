@@ -4,6 +4,7 @@ import { MongoQueryRunner } from 'typeorm/driver/mongodb/MongoQueryRunner';
 import { ApolloServer, gql } from 'apollo-server';
 import resolvers from '../resolvers/index';
 import { RequiresAuthDirective } from '../resolvers/Directives';
+import { APP_SECRET } from '../utils';
 
 let cachedConnection: Connection = null;
 
@@ -43,6 +44,7 @@ const createTestServer = async (testDatabase: any, testHeaders: any = {}) => {
     typeDefs: gql(fs.readFileSync(__dirname.concat('/../schema.graphql'), 'utf8')),
     resolvers,
     context: request => ({
+      appSecret: APP_SECRET,
       request: {
         req: {
           headers: testHeaders

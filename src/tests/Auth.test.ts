@@ -8,6 +8,9 @@ import { UserAlreadyExistsError } from '../services/Auth';
 import { SCALAR_NON_BLANK_STRING_VALUE_ERROR_MSG } from '../resolvers/Scalars';
 import { queryUsers, signupUser, loginUser } from './TestQueries';
 import { JsonWebTokenError } from 'jsonwebtoken';
+import { encodeId, decodeId } from '../utils';
+import { User } from '../entity/User';
+import { TYPES, TYPE_USER } from '../resolvers/Types';
 
 let server: ApolloServer;
 let client: ApolloServerTestClient;
@@ -33,6 +36,16 @@ describe('Auth', () => {
       expect(res.data.users.length).toBe(0);
 
       res = await signupUser(client, "test3", "test3");
+      const user = await testDatabase.getRepository(User).findOne({ username: "test3" });
+
+      // Test the id
+      const encoded = encodeId(user.id.toString(), TYPE_USER);
+      expect(res.data.signup.id).toBe(encoded);
+
+      const decoded = decodeId(res.data.signup.id);
+      expect(decoded.id).toBe(user.id.toString());
+      expect(decoded.typeName).toBe(TYPE_USER);
+
       expect(res.data.signup.username).toBe("test3");
 
       res = await queryUsers(client);
@@ -199,9 +212,18 @@ describe('Auth', () => {
 
       // Test if logged in
       res = await client.query({
-        query: gql`query { me { username } }`
+        query: gql`query { 
+          me { 
+            id 
+            username 
+          } 
+        }`
       });
 
+      let id = res.data.me.id;
+      id = decodeId(id).id;
+      const userInDB = await testDatabase.manager.findOne(User, { where: { username: "test" } });
+      expect(id).toBe(userInDB.id.toString());
       expect(res.data.me.username).toBe("test");
       expect(res.errors).toBeUndefined();
     });

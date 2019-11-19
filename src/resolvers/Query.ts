@@ -5,11 +5,11 @@ import AuthService from "../services/Auth";
 import { getTokenFromContext } from '../utils';
 
 export const Query: GQLQueryResolvers = {
-  users(root, args, context, info) {
-    const users = context.db.mongoManager.find(User);
-    return users;
+  async users(root, args, context, info) {
+    const users = await context.db.mongoManager.find(User);
+    return users.map(user => user.toGQL());
   },
   async me(root, args, context) {
-    return context.user;
+    return context.user.toGQL();
   }
 }

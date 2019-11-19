@@ -6,6 +6,7 @@ const GQL_GET_USERS = gql`query { users { username } }`;
 const GQL_SIGNUP_USER = gql`
   mutation SignupUser($username: NonBlankString!, $password: NonBlankString!) {
     signup(username: $username, password: $password) {
+         id
          username
        }
   }`;
@@ -13,6 +14,7 @@ const GQL_SIGNUP_USER = gql`
 const GQL_LOGIN_USER = gql`
   mutation LoginUser($username: NonBlankString!, $password: NonBlankString!) {
     login(username: $username, password: $password) { 
+      id
       token 
     }
   }`;
@@ -35,6 +37,7 @@ export const signupUser = async (client: ApolloServerTestClient, username: strin
     mutation: gql`
       mutation {
         signup(username: "${username}", password: "${password}") {
+          id
           username
         }
       }`

@@ -32,7 +32,7 @@
       "apollo-server": "^2.9.7",
       "bcrypt": "^3.0.6",
       "jsonwebtoken": "^8.5.1",
-      "mongodb": "^3.3.3",
+      "pg": "^7.14.0",
       "reflect-metadata": "^0.1.10",
       "typeorm": "^0.2.20"
    }

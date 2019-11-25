@@ -1,4 +1,4 @@
-import { Entity, ObjectIdColumn, ObjectID, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, ObjectID, Column } from "typeorm";
 import { GQLUser } from '../generated/graphql';
 import { TYPE_USER } from '../resolvers/Types';
 import { encodeId } from '../utils';
@@ -6,8 +6,8 @@ import { encodeId } from '../utils';
 @Entity()
 export class User {
 
-    @ObjectIdColumn()
-    id: ObjectID;
+    @PrimaryGeneratedColumn()
+    id: number;
 
     @Column({ unique: true })
     username: string;
@@ -15,11 +15,12 @@ export class User {
     @Column()
     password: string;
 
-    @Column()
-    token: string;
-
-    @Column()
-    tokenIssuedAt: Date
+    // These fields are if you want to use stateful tokens
+    // @Column()
+    // token: string;
+    
+    // @Column()
+    // tokenIssuedAt: Date
 
     encodedId() {
         return encodeId(this.id.toString(), TYPE_USER);

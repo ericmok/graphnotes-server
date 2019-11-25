@@ -1,0 +1,11 @@
+version: "3"
+services:
+  postgres:
+    container_name: graphnotes_postgres
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    env_file:
+      - docker.env
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data

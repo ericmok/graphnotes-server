@@ -1,31 +1,16 @@
 import * as fs from 'fs';
 import { createConnection, Connection } from 'typeorm';
-import { MongoQueryRunner } from 'typeorm/driver/mongodb/MongoQueryRunner';
 import { ApolloServer, gql } from 'apollo-server';
 import resolvers from '../resolvers/index';
 import { RequiresAuthDirective } from '../resolvers/Directives';
 import { APP_SECRET } from '../utils';
+import config from '../../ormconfig';
 
 let cachedConnection: Connection = null;
 
 const createTestDatabase = async () => {
-  const connection = await createConnection({
-    "type": "mongodb",
-    "host": "localhost",
-    "port": 27017,
-    "database": "test",
-    "synchronize": true,
-    "logging": false,
-
-    "useUnifiedTopology": true,
-
-    "entities": [
-      __dirname + "/../entity/**/*.ts"
-    ]
-  });
-
+  const connection = await createConnection(config);
   cachedConnection = connection;
-
   return connection;
 };
 

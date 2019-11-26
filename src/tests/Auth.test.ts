@@ -3,7 +3,7 @@ import { ApolloServer, gql, AuthenticationError } from 'apollo-server';
 import { GraphQLResponse } from 'graphql-extensions';
 import { Connection } from 'typeorm';
 import { GQLToken } from '../generated/graphql';
-import createTestServer, { getTestDatabaseInstance } from './TestServer';
+import createTestServer, { getTestDatabaseInstance, clearDatabase } from './TestServer';
 import { UserAlreadyExistsError } from '../services/Auth';
 import { SCALAR_NON_BLANK_STRING_VALUE_ERROR_MSG } from '../resolvers/Scalars';
 import { queryUsers, signupUser, loginUser } from './TestQueries';
@@ -22,7 +22,7 @@ describe('Auth', () => {
   describe('Signup', () => {
     beforeEach(async () => {
       testDatabase = await getTestDatabaseInstance();
-      await testDatabase.synchronize(true);
+      await clearDatabase();
       server = await createTestServer(testDatabase);
       client = createTestClient(server);
     });
@@ -117,7 +117,7 @@ describe('Auth', () => {
     beforeAll(async () => {
 
       testDatabase = await getTestDatabaseInstance();
-      await testDatabase.synchronize(true);
+      await clearDatabase();
       server = await createTestServer(testDatabase);
       client = createTestClient(server);
 
@@ -185,7 +185,7 @@ describe('Auth', () => {
   describe('me', () => {
     beforeAll(async () => {
       testDatabase = await getTestDatabaseInstance();
-      await testDatabase.synchronize(true);
+      await clearDatabase();
       server = await createTestServer(testDatabase, {
       });
       client = createTestClient(server);

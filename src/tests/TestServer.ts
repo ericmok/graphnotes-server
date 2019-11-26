@@ -10,19 +10,37 @@ let cachedConnection: Connection = null;
 
 const createTestDatabase = async () => {
   const connection = await createConnection(config);
-  cachedConnection = connection;
+  // This doesn't work for some reason... but synchronize: true set in config
+  // connection.synchronize(true) 
   return connection;
 };
 
 export const getTestDatabaseInstance = async () => {
-  try {
-    return await createTestDatabase();
+  if (cachedConnection === null) {
+    try {
+      cachedConnection = await createTestDatabase();
+      return cachedConnection;
+    }
+    catch (err) {
+      console.log(err);
+      return cachedConnection;
+    }
   }
-  catch (err) {
-    return cachedConnection;
-  }
+  return cachedConnection;
 }
 
+export const clearDatabase = async () => {
+  // https://github.com/nestjs/nest/issues/409
+
+  const connection = await getTestDatabaseInstance();
+  const entities = connection.entityMetadatas;
+
+  for (let entity of entities) {
+    const repo = connection.getRepository(entity.name);
+    // await repo.query(`TRUNCATE TABLE ${entity.tableName} CASCADE`);
+    await repo.query(`DELETE FROM "${entity.tableName}"`)
+  }
+}
 
 const createTestServer = async (testDatabase: any, testHeaders: any = {}) => {
   let server = new ApolloServer({

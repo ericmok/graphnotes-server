@@ -60,3 +60,39 @@ export const loginUser = async (client: ApolloServerTestClient, username: string
     `
   });
 };
+
+const GQL_CREATE_GRAPH = gql`
+  mutation CreateGraph($name: NonEmptyString) {
+    createGraph(name: $name) { 
+      id
+      name
+      user {
+        id
+        username
+      }
+      root {
+        id
+        user
+        content
+        components
+      }
+      traversalRoot {
+        id
+        user
+        content
+        components
+      }
+    }
+  }`;
+
+
+export const createGraph = async (
+  client: ApolloServerTestClient, 
+  name: string) => {
+  return client.mutate({
+    mutation: GQL_LOGIN_USER,
+    variables: {
+      name
+    }
+  })
+};

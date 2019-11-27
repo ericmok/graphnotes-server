@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, ObjectID, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, ObjectID, Column, OneToMany } from "typeorm";
 import { GQLUser } from '../generated/graphql';
 import { TYPE_USER } from '../resolvers/Types';
 import { encodeId } from '../utils';
+import { Graph } from './Graph';
 
 @Entity()
 export class User {
@@ -21,6 +22,9 @@ export class User {
     
     // @Column()
     // tokenIssuedAt: Date
+
+    @OneToMany(type => Graph, graph => graph.user)
+    graphs: Graph;
 
     encodedId() {
         return encodeId(this.id.toString(), TYPE_USER);

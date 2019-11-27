@@ -14,7 +14,6 @@ const GQL_SIGNUP_USER = gql`
 const GQL_LOGIN_USER = gql`
   mutation LoginUser($username: NonBlankString!, $password: NonBlankString!) {
     login(username: $username, password: $password) { 
-      id
       token 
     }
   }`;
@@ -62,26 +61,10 @@ export const loginUser = async (client: ApolloServerTestClient, username: string
 };
 
 const GQL_CREATE_GRAPH = gql`
-  mutation CreateGraph($name: NonEmptyString) {
+  mutation CreateGraph($name: String) {
     createGraph(name: $name) { 
       id
       name
-      user {
-        id
-        username
-      }
-      root {
-        id
-        user
-        content
-        components
-      }
-      traversalRoot {
-        id
-        user
-        content
-        components
-      }
     }
   }`;
 
@@ -90,7 +73,7 @@ export const createGraph = async (
   client: ApolloServerTestClient, 
   name: string) => {
   return client.mutate({
-    mutation: GQL_LOGIN_USER,
+    mutation: GQL_CREATE_GRAPH,
     variables: {
       name
     }

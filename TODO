@@ -35,3 +35,4 @@ Refactors:
 
 General:
     ☐ Add Node endpoint in the style of Relay Graphql spec @created(19-11-19 15:54)
+    ☐ Make tests run async? Tests step over each other since they use same db (https://codewithhugo.com/run-jest-sequentially/) @created(19-11-26 23:13)

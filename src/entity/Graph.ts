@@ -1,38 +1,17 @@
-import { Entity } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique } from "typeorm";
 import { GQLGraph } from '../generated/graphql';
+import { User } from "./User";
 
+@Entity()
+@Unique("UQ_NAME", ["name", "user"])
+export class Graph {
 
-// import { Entity, ObjectIdColumn, ObjectID, Column } from "typeorm";
-// import { GQLUser } from '../generated/graphql';
+  @PrimaryGeneratedColumn()
+  id: number;
 
-// @Entity()
-// export class User {
+  @Column()
+  name: string;
 
-//     @ObjectIdColumn()
-//     id: ObjectID;
-
-//     @Column({ unique: true })
-//     username: string;
-
-//     @Column()
-//     password: string;
-
-//     @Column()
-//     token: string;
-
-//     @Column()
-//     tokenIssuedAt: Date
-
-//     toGQL(): GQLUser {
-//         return {
-//             username: this.username
-//         }
-//     }
-
-//     constructor(data?: { username: string, password: string }) {
-//         if (data) {
-//             this.username = data.username;
-//             this.password = data.password;
-//         }
-//     }
-// }
+  @ManyToOne(type => User, user => user.graphs)
+  user: User
+}

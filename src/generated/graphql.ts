@@ -34,10 +34,17 @@ export type GQLArc = GQLNode & {
   dst: GQLVertex,
 };
 
+export type GQLCreateGraphResult = {
+   __typename?: 'CreateGraphResult',
+  id: Scalars['ID'],
+  name?: Maybe<Scalars['String']>,
+};
+
 export type GQLGraph = GQLNode & {
    __typename?: 'Graph',
   id: Scalars['ID'],
   user: GQLUser,
+  name?: Maybe<Scalars['String']>,
   root?: Maybe<GQLVertex>,
   traversalRoot?: Maybe<GQLTraversalVertex>,
 };
@@ -47,7 +54,7 @@ export type GQLMutation = {
   _?: Maybe<Scalars['Boolean']>,
   signup?: Maybe<GQLUser>,
   login?: Maybe<GQLToken>,
-  createGraph?: Maybe<GQLGraph>,
+  createGraph: GQLCreateGraphResult,
 };
 
 
@@ -193,10 +200,11 @@ export type GQLResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>,
   NonBlankString: ResolverTypeWrapper<Scalars['NonBlankString']>,
   Token: ResolverTypeWrapper<GQLToken>,
-  Graph: ResolverTypeWrapper<GQLGraph>,
+  CreateGraphResult: ResolverTypeWrapper<GQLCreateGraphResult>,
   Vertex: ResolverTypeWrapper<GQLVertex>,
-  TraversalVertex: ResolverTypeWrapper<GQLTraversalVertex>,
   Arc: ResolverTypeWrapper<GQLArc>,
+  TraversalVertex: ResolverTypeWrapper<GQLTraversalVertex>,
+  Graph: ResolverTypeWrapper<GQLGraph>,
   AdditionalEntityFields: GQLAdditionalEntityFields,
 };
 
@@ -211,10 +219,11 @@ export type GQLResolversParentTypes = {
   Mutation: {},
   NonBlankString: Scalars['NonBlankString'],
   Token: GQLToken,
-  Graph: GQLGraph,
+  CreateGraphResult: GQLCreateGraphResult,
   Vertex: GQLVertex,
-  TraversalVertex: GQLTraversalVertex,
   Arc: GQLArc,
+  TraversalVertex: GQLTraversalVertex,
+  Graph: GQLGraph,
   AdditionalEntityFields: GQLAdditionalEntityFields,
 };
 
@@ -246,9 +255,15 @@ export type GQLArcResolvers<ContextType = Context, ParentType extends GQLResolve
   dst?: Resolver<GQLResolversTypes['Vertex'], ParentType, ContextType>,
 };
 
+export type GQLCreateGraphResultResolvers<ContextType = Context, ParentType extends GQLResolversParentTypes['CreateGraphResult'] = GQLResolversParentTypes['CreateGraphResult']> = {
+  id?: Resolver<GQLResolversTypes['ID'], ParentType, ContextType>,
+  name?: Resolver<Maybe<GQLResolversTypes['String']>, ParentType, ContextType>,
+};
+
 export type GQLGraphResolvers<ContextType = Context, ParentType extends GQLResolversParentTypes['Graph'] = GQLResolversParentTypes['Graph']> = {
   id?: Resolver<GQLResolversTypes['ID'], ParentType, ContextType>,
   user?: Resolver<GQLResolversTypes['User'], ParentType, ContextType>,
+  name?: Resolver<Maybe<GQLResolversTypes['String']>, ParentType, ContextType>,
   root?: Resolver<Maybe<GQLResolversTypes['Vertex']>, ParentType, ContextType>,
   traversalRoot?: Resolver<Maybe<GQLResolversTypes['TraversalVertex']>, ParentType, ContextType>,
 };
@@ -257,11 +272,11 @@ export type GQLMutationResolvers<ContextType = Context, ParentType extends GQLRe
   _?: Resolver<Maybe<GQLResolversTypes['Boolean']>, ParentType, ContextType>,
   signup?: Resolver<Maybe<GQLResolversTypes['User']>, ParentType, ContextType, RequireFields<GQLMutationSignupArgs, 'username' | 'password'>>,
   login?: Resolver<Maybe<GQLResolversTypes['Token']>, ParentType, ContextType, RequireFields<GQLMutationLoginArgs, 'username' | 'password'>>,
-  createGraph?: Resolver<Maybe<GQLResolversTypes['Graph']>, ParentType, ContextType, GQLMutationCreateGraphArgs>,
+  createGraph?: Resolver<GQLResolversTypes['CreateGraphResult'], ParentType, ContextType, GQLMutationCreateGraphArgs>,
 };
 
 export type GQLNodeResolvers<ContextType = Context, ParentType extends GQLResolversParentTypes['Node'] = GQLResolversParentTypes['Node']> = {
-  __resolveType: TypeResolveFn<'User' | 'Graph' | 'Vertex' | 'TraversalVertex' | 'Arc', ParentType, ContextType>,
+  __resolveType: TypeResolveFn<'User' | 'Vertex' | 'Arc' | 'TraversalVertex' | 'Graph', ParentType, ContextType>,
   id?: Resolver<GQLResolversTypes['ID'], ParentType, ContextType>,
 };
 
@@ -302,6 +317,7 @@ export type GQLVertexResolvers<ContextType = Context, ParentType extends GQLReso
 
 export type GQLResolvers<ContextType = Context> = {
   Arc?: GQLArcResolvers<ContextType>,
+  CreateGraphResult?: GQLCreateGraphResultResolvers<ContextType>,
   Graph?: GQLGraphResolvers<ContextType>,
   Mutation?: GQLMutationResolvers<ContextType>,
   Node?: GQLNodeResolvers,

@@ -5,7 +5,7 @@
    "main": "index.js",
    "scripts": {
       "start": "nodemon -e ts,graphql -x ts-node ./src/index.ts",
-      "test": "jest --watch",
+      "test": "jest -i --watch",
       "codegen": "graphql-codegen --config codegen.yml"
    },
    "author": "",

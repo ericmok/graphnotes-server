@@ -17,6 +17,7 @@ type Token {
 type User implements Node {
   id: ID!
   username: String
+  graphs: [Graph]
 }
 
 type Query {
@@ -71,7 +72,7 @@ type CreateGraphResult {
 }
 
 extend type Query {
-  graphs(username: String): Boolean
+  graph(id: ID!): Graph
 }
 
 extend type Mutation {

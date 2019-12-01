@@ -9,7 +9,9 @@ import { TYPE_GRAPH } from '../resolvers/Types';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { encodeId, decodeId } from '../utils';
 import { User } from '../entity/User';
+import { Graph } from '../entity/Graph';
 import { GRAPH_UNIQUE_NAME_REQUIRED_MSG } from '../services/Graph';
+import gql from 'graphql-tag';
 
 let server: ApolloServer;
 let client: ApolloServerTestClient;
@@ -20,6 +22,7 @@ let token: string;
 
 
 describe('Graph', () => {
+
   beforeEach(async () => {
     testDatabase = await getTestDatabaseInstance();
     await clearDatabase();
@@ -32,6 +35,7 @@ describe('Graph', () => {
 
     token = res.data.login.token;
   });
+
   afterAll(async () => {
     server.stop();
   });
@@ -49,6 +53,14 @@ describe('Graph', () => {
     expect(res.data.createGraph.id).not.toBeUndefined();
     expect(decodeId(res.data.createGraph.id).typeName).toBe(TYPE_GRAPH);
     expect(res.data.createGraph.name).toBe("my graph");
+
+    // TODO: Change Create Graph output...
+    // expect(res.data.createGraph.user).not.toBeUndefined();
+    // expect(res.data.createGraph.user.username).toBe("test");
+
+    const newGraph = await testDatabase.getRepository(Graph).findOne({ relations: ['user'], where: { id: Number.parseInt(decodeId(res.data.createGraph.id).id) } });
+    expect(newGraph.name).toBe("my graph");
+    expect(newGraph.user.username).toBe("test");
   });
 
   test('Throws error when no login', async () => {
@@ -126,5 +138,180 @@ describe('Graph', () => {
     expect(res.errors[0].message).toContain(GRAPH_UNIQUE_NAME_REQUIRED_MSG);
     expect(res.errors[0].extensions.code).toContain("BAD_USER_INPUT");
 
+  });
+
+  test('Can get graphs for user with nested query', async () => {
+    server = await createTestServer(testDatabase, {
+      'authorization': token
+    });
+
+    client = createTestClient(server);
+
+    res = await createGraph(client, "graph 1");
+    res = await createGraph(client, "graph 2");
+
+    res = await client.query({
+      query: gql`
+        query MyGraphs {
+          me {
+            graphs {
+              id
+              name
+              user {
+                id
+                username
+              }
+            }
+          }
+        }
+    `});
+
+    expect(res.data).not.toBeUndefined();
+    expect(res.data).not.toBeNull();
+    expect(res.errors).toBeUndefined();
+    expect(res.data.me.graphs.length).toBe(2);
+    expect(res.data.me.graphs[0].name).toBe("graph 1");
+    expect(res.data.me.graphs[0].user.id).not.toBeUndefined();
+    expect(res.data.me.graphs[0].user.username).toBe("test");
+    expect(res.data.me.graphs[1].name).toBe("graph 2");
+    expect(res.data.me.graphs[1].user.id).not.toBeUndefined();
+    expect(res.data.me.graphs[1].user.username).toBe("test");
+  });
+
+  test('Can handle getting graphs which user doesn\'t have', async () => {
+    server = await createTestServer(testDatabase, {
+      'authorization': token
+    });
+
+    client = createTestClient(server);
+
+    res = await client.query({
+      query: gql`
+        query MyGraphs {
+          me {
+            graphs {
+              id
+              name
+              user {
+                id
+                username
+              }
+            }
+          }
+        }
+    `});
+
+    expect(res.data).not.toBeUndefined();
+    expect(res.data).not.toBeNull();
+    expect(res.errors).toBeUndefined();
+    expect(res.data.me.graphs.length).toBe(0);
+  });
+
+  test('Cannot get graphs for user without auth', async () => {
+    server = await createTestServer(testDatabase, {
+      'authorization': token
+    });
+
+    client = createTestClient(server);
+
+    res = await createGraph(client, "graph 1");
+    res = await createGraph(client, "graph 2");
+
+    server = await createTestServer(testDatabase, {});
+
+    client = createTestClient(server);
+
+    res = await client.query({
+      query: gql`
+        query MyGraphs {
+          me {
+            graphs {
+              id
+              name
+              user {
+                id
+                username
+              }
+            }
+          }
+        }
+    `});
+
+    expect(res.data.me).toBeNull();
+    expect(res.errors.length).toBeGreaterThan(0);
+  });
+
+  test('Can get graph by ID', async () => {
+    server = await createTestServer(testDatabase, { 'authorization': token });
+    client = createTestClient(server);
+
+    res = await createGraph(client, "graph 1");
+    const graph = await testDatabase.manager.getRepository(Graph).findOne({
+      relations: ['user'], where: {
+        name: "graph 1"
+      }
+    });
+
+    const eid = encodeId(graph.id.toString(), TYPE_GRAPH);
+
+    res = await client.query({
+      query: gql`
+        query GetGraphById($id: ID!) {
+          graph(id: $id) {
+            id
+            name
+            user {
+              id
+              username
+            }
+          }
+        }
+      `,
+      variables: {
+        id: eid
+      }
+    });
+
+    expect(res.data.graph.id).toBe(eid);
+    expect(res.data.graph.name).toBe("graph 1");
+    expect(res.data.graph.user.id).not.toBeUndefined();
+    expect(res.data.graph.user.username).toBe("test");
+    expect(res.errors).toBeUndefined();
+  });
+
+
+  test('Can handle getting graph with invalid id', async () => {
+    server = await createTestServer(testDatabase, { 'authorization': token });
+    client = createTestClient(server);
+
+    res = await createGraph(client, "graph 1");
+    const graph = await testDatabase.manager.getRepository(Graph).findOne({
+      relations: ['user'], where: {
+        name: "graph 1"
+      }
+    });
+
+    const eid = encodeId((graph.id + 100).toString(), TYPE_GRAPH);
+
+    res = await client.query({
+      query: gql`
+        query GetGraphById($id: ID!) {
+          graph(id: $id) {
+            id
+            name
+            user {
+              id
+              username
+            }
+          }
+        }
+      `,
+      variables: {
+        id: eid
+      }
+    });
+
+    expect(res.errors.length).toBeGreaterThan(0);
+    expect(res.errors[0].extensions.code).toContain('NOT_FOUND_ERROR');
   });
 });

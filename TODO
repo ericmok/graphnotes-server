@@ -15,6 +15,7 @@ Auth:
     ☐ Implement logging of Auth errors but make it opaque to end users @created(19-11-10 18:15)
     ✔ Graphql Auth directives @created(19-11-16 20:22) @done(19-11-17 15:20)
     ☐ Test directives @created(19-11-17 15:20)
+    ☐ Change user references from username to ID? @created(19-11-28 17:15)
 
 Graphs:
     ☐ Add automatically generated graph slugs @created(19-11-16 18:44)
@@ -32,6 +33,7 @@ Refactors:
     ☐ Should testQueries be co-located with resolvers? @created(19-11-16 18:43)
     ☐ DRY up test server setup @created(19-11-16 18:43)
     ☐ Figure out where auth and permissions are located. Co-locate auth services and endpoints? @created(19-11-16 20:15)
+    ☐ Refactor names of services and resolvers @created(19-11-28 17:15)
 
 General:
     ☐ Add Node endpoint in the style of Relay Graphql spec @created(19-11-19 15:54)

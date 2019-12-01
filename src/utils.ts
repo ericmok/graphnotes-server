@@ -1,6 +1,6 @@
 import { Connection } from "typeorm";
 import { User } from './entity/User';
-import { UserInputError } from 'apollo-server';
+import { UserInputError, ApolloError } from 'apollo-server';
 import { TYPES } from './resolvers/Types';
 
 export const DEFAULT_SECRET = "h4-98po"
@@ -50,4 +50,10 @@ export const decodeId = (ID: string) => {
 export const getTokenFromContext: (context: Context) => string = (context: Context) => {
   const authHeader = context.request.req.headers['authorization'];
   return (authHeader === undefined) ? "" : authHeader;
+}
+
+export class NotFoundError extends ApolloError {
+  constructor(message: string) {
+    super(message, "NOT_FOUND_ERROR");
+  }
 }

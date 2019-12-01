@@ -1,8 +1,10 @@
 import { Query } from './Query';
+import { User } from './User';
 import Auth from './Mutation/Auth';
 import { NonBlankString } from './Scalars';
 import { decodeId, Context } from '../utils';
 import Graph from './Mutation/Graph';
+import { GraphResolver } from './Graph';
 
 export default {
   Query,
@@ -16,5 +18,7 @@ export default {
       return idPayload.typeName;
     }
   },
-  NonBlankString
+  NonBlankString,
+  User,
+  Graph: GraphResolver
 }

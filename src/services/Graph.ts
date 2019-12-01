@@ -1,6 +1,6 @@
 import { getManager, InsertResult, QueryFailedError } from 'typeorm';
 import { UserInputError } from 'apollo-server';
-import { encodeId } from '../utils';
+import { encodeId, Context, decodeId, NotFoundError } from '../utils';
 import { TYPE_GRAPH } from '../resolvers/Types';
 import { Graph } from '../entity/Graph';
 import { User } from '../entity/User';
@@ -19,15 +19,12 @@ const GraphService = {
       name = Math.random().toString();
     }
 
-    const graphRepo = await getManager().getRepository(Graph);
-
-    let result: InsertResult;
+    const graphToSave = new Graph();
+    graphToSave.name = name;
+    graphToSave.user = user;
 
     try {
-      result = await graphRepo.insert({
-        name: name,
-        user: user
-      });
+      await getManager().getRepository(Graph).save(graphToSave);
     }
     catch (err) {
       if (err instanceof QueryFailedError) {
@@ -41,14 +38,50 @@ const GraphService = {
       }
     }
 
-    const id = result.identifiers[0].id;
-    const newGraph = await graphRepo.findOne({ id });
-
     return {
-      id: encodeId(id, TYPE_GRAPH),
-      name: newGraph.name
+      id: encodeId(graphToSave.id.toString(), TYPE_GRAPH),
+      name: graphToSave.name
     };
+  },
+  async getGraph(graphId: string, context: Context) {
+    const graphRepo = context.db.manager.getRepository(Graph);
+
+    const graph = await graphRepo.findOne({
+      relations: ['user'], where: {
+        id: Number.parseInt(decodeId(graphId).id)
+      }
+    });
+
+    if (!graph) {
+      throw new NotFoundError('Graph not found');
+    }
+
+    const ret = {
+      id: encodeId(graph.id.toString(), TYPE_GRAPH),
+      name: graph.name,
+      user: graph.user.toGQL()
+    };
+
+    return ret;
+  },
+  async getGraphsForUser(user: User) {
+    // TODO: user validation here?    
+    const graphRepo = await getManager().getRepository(Graph);
+    const graphs = await graphRepo.find({ where: {user: user}, relations: ["user"] });
+
+    const res = graphs.map(g => ({
+      id: encodeId(g.id.toString(), TYPE_GRAPH),
+      name: g.name.toString(),
+      user: g.user.toGQL()
+    }));
+
+    return res;
   }
 };
 
 export default GraphService;
+
+/*
+References:
+https://typeorm.io/#/relations-faq/how-to-use-relation-id-without-joining-relation
+*/

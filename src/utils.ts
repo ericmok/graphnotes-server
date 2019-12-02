@@ -22,23 +22,26 @@ export interface IdPayload {
   typename: string
 }
 
-export const encodeId = (id: string, typename: string) => {
+export const encodeId = (id: number, typename: string) => {
   return Buffer.from(`${typename}:${id}`).toString('base64');
 }
 
-export const decodeId = (ID: string) => {
+export const decodeIdOrThrow = (ID: string) => {
   const strToDecode = Buffer.from(ID, 'base64').toString('utf-8');
   const colonIndex = strToDecode.indexOf(':');
 
   if (colonIndex === -1) {
-    throw new UserInputError('Invalid id');
+    throw new InvalidIdError();
   }
 
-  const typeName = strToDecode.substring(0, colonIndex);
-  const id = strToDecode.substring(colonIndex + 1, strToDecode.length);
-
+  const typeName = strToDecode.substring(0, colonIndex);  
   if (!TYPES.has(typeName)) {
-    throw new UserInputError('Invalid id')
+    throw new InvalidIdError()
+  }
+
+  const id = Number.parseInt(strToDecode.substring(colonIndex + 1, strToDecode.length));
+  if (Number.isNaN(id)) {
+    throw new InvalidIdError();
   }
 
   return {
@@ -55,5 +58,11 @@ export const getTokenFromContext: (context: Context) => string = (context: Conte
 export class NotFoundError extends ApolloError {
   constructor(message: string) {
     super(message, "NOT_FOUND_ERROR");
+  }
+}
+
+export class InvalidIdError extends UserInputError {
+  constructor() {
+    super('Invalid id');
   }
 }

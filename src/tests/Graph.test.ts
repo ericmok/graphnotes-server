@@ -7,7 +7,7 @@ import createTestServer, { getTestDatabaseInstance, clearDatabase } from './Test
 import { queryUsers, signupUser, loginUser, createGraph } from './TestQueries';
 import { TYPE_GRAPH } from '../resolvers/Types';
 import { JsonWebTokenError } from 'jsonwebtoken';
-import { encodeId, decodeId } from '../utils';
+import { encodeId, decodeIdOrThrow } from '../utils';
 import { User } from '../entity/User';
 import { Graph } from '../entity/Graph';
 import { GRAPH_UNIQUE_NAME_REQUIRED_MSG } from '../services/Graph';
@@ -51,14 +51,14 @@ describe('Graph', () => {
 
     expect(res.data.createGraph).not.toBeUndefined();
     expect(res.data.createGraph.id).not.toBeUndefined();
-    expect(decodeId(res.data.createGraph.id).typeName).toBe(TYPE_GRAPH);
+    expect(decodeIdOrThrow(res.data.createGraph.id).typeName).toBe(TYPE_GRAPH);
     expect(res.data.createGraph.name).toBe("my graph");
 
     // TODO: Change Create Graph output...
     // expect(res.data.createGraph.user).not.toBeUndefined();
     // expect(res.data.createGraph.user.username).toBe("test");
 
-    const newGraph = await testDatabase.getRepository(Graph).findOne({ relations: ['user'], where: { id: Number.parseInt(decodeId(res.data.createGraph.id).id) } });
+    const newGraph = await testDatabase.getRepository(Graph).findOne({ relations: ['user'], where: { id: decodeIdOrThrow(res.data.createGraph.id).id } });
     expect(newGraph.name).toBe("my graph");
     expect(newGraph.user.username).toBe("test");
   });
@@ -85,7 +85,7 @@ describe('Graph', () => {
 
     expect(res.data.createGraph).not.toBeUndefined();
     expect(res.data.createGraph.id).not.toBeUndefined();
-    expect(decodeId(res.data.createGraph.id).typeName).toBe(TYPE_GRAPH);
+    expect(decodeIdOrThrow(res.data.createGraph.id).typeName).toBe(TYPE_GRAPH);
     expect(res.data.createGraph.name.length).toBeGreaterThan(0);
     expect(res.data.createGraph.name).not.toBe("");
   });
@@ -100,7 +100,7 @@ describe('Graph', () => {
 
     expect(res.data.createGraph).not.toBeUndefined();
     expect(res.data.createGraph.id).not.toBeUndefined();
-    expect(decodeId(res.data.createGraph.id).typeName).toBe(TYPE_GRAPH);
+    expect(decodeIdOrThrow(res.data.createGraph.id).typeName).toBe(TYPE_GRAPH);
     expect(res.data.createGraph.name.length).toBeGreaterThan(0);
 
 
@@ -109,7 +109,7 @@ describe('Graph', () => {
 
     expect(res.data.createGraph).not.toBeUndefined();
     expect(res.data.createGraph.id).not.toBeUndefined();
-    expect(decodeId(res.data.createGraph.id).typeName).toBe(TYPE_GRAPH);
+    expect(decodeIdOrThrow(res.data.createGraph.id).typeName).toBe(TYPE_GRAPH);
     expect(res.data.createGraph.name.length).toBeGreaterThan(0);
 
     expect(res.errors).toBeUndefined();
@@ -128,7 +128,7 @@ describe('Graph', () => {
 
     expect(res.data.createGraph).not.toBeUndefined();
     expect(res.data.createGraph.id).not.toBeUndefined();
-    expect(decodeId(res.data.createGraph.id).typeName).toBe(TYPE_GRAPH);
+    expect(decodeIdOrThrow(res.data.createGraph.id).typeName).toBe(TYPE_GRAPH);
     expect(res.data.createGraph.name.length).toBeGreaterThan(0);
 
     res = await createGraph(client, randomGraphName);
@@ -252,7 +252,7 @@ describe('Graph', () => {
       }
     });
 
-    const eid = encodeId(graph.id.toString(), TYPE_GRAPH);
+    const eid = encodeId(graph.id, TYPE_GRAPH);
 
     res = await client.query({
       query: gql`
@@ -291,7 +291,7 @@ describe('Graph', () => {
       }
     });
 
-    const eid = encodeId((graph.id + 100).toString(), TYPE_GRAPH);
+    let eid = encodeId((graph.id + 100), TYPE_GRAPH);
 
     res = await client.query({
       query: gql`
@@ -313,5 +313,71 @@ describe('Graph', () => {
 
     expect(res.errors.length).toBeGreaterThan(0);
     expect(res.errors[0].extensions.code).toContain('NOT_FOUND_ERROR');
+
+    eid = encodeId(NaN, TYPE_GRAPH);
+
+    res = await client.query({
+      query: gql`
+        query GetGraphById($id: ID!) {
+          graph(id: $id) {
+            id
+            name
+            user {
+              id
+              username
+            }
+          }
+        }
+      `,
+      variables: {
+        id: eid
+      }
+    });
+
+    expect(res.errors.length).toBe(1);
+    expect(res.errors[0].extensions.code).toContain('BAD_USER_INPUT');
+    eid = encodeId(NaN, TYPE_GRAPH);
+
+    eid = Buffer.from(`malicious:${graph.id}:string:${graph.id}`).toString('base64');
+
+    res = await client.query({
+      query: gql`
+        query GetGraphById($id: ID!) {
+          graph(id: $id) {
+            id
+            name
+            user {
+              id
+              username
+            }
+          }
+        }
+      `,
+      variables: {
+        id: eid
+      }
+    });
+
+    expect(res.errors.length).toBe(1);
+    expect(res.errors[0].extensions.code).toContain('BAD_USER_INPUT');
+    eid = encodeId(NaN, TYPE_GRAPH);
+
+    res = await client.query({
+      query: gql`
+        query {
+          graph(id: NaN) {
+            id
+            name
+            user {
+              id
+              username
+            }
+          }
+        }
+      `
+    });
+
+    expect(res.errors.length).toBe(1);
+    expect(res.errors[0].extensions.code).toContain('GRAPHQL_VALIDATION_FAILED');
   });
 });

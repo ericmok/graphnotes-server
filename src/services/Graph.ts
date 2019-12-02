@@ -1,6 +1,6 @@
 import { getManager, InsertResult, QueryFailedError } from 'typeorm';
 import { UserInputError } from 'apollo-server';
-import { encodeId, Context, decodeId, NotFoundError } from '../utils';
+import { encodeId, Context, decodeIdOrThrow, NotFoundError } from '../utils';
 import { TYPE_GRAPH } from '../resolvers/Types';
 import { Graph } from '../entity/Graph';
 import { User } from '../entity/User';
@@ -39,7 +39,7 @@ const GraphService = {
     }
 
     return {
-      id: encodeId(graphToSave.id.toString(), TYPE_GRAPH),
+      id: encodeId(graphToSave.id, TYPE_GRAPH),
       name: graphToSave.name
     };
   },
@@ -48,7 +48,7 @@ const GraphService = {
 
     const graph = await graphRepo.findOne({
       relations: ['user'], where: {
-        id: Number.parseInt(decodeId(graphId).id)
+        id: decodeIdOrThrow(graphId).id
       }
     });
 
@@ -57,7 +57,7 @@ const GraphService = {
     }
 
     const ret = {
-      id: encodeId(graph.id.toString(), TYPE_GRAPH),
+      id: encodeId(graph.id, TYPE_GRAPH),
       name: graph.name,
       user: graph.user.toGQL()
     };
@@ -70,7 +70,7 @@ const GraphService = {
     const graphs = await graphRepo.find({ where: {user: user}, relations: ["user"] });
 
     const res = graphs.map(g => ({
-      id: encodeId(g.id.toString(), TYPE_GRAPH),
+      id: encodeId(g.id, TYPE_GRAPH),
       name: g.name.toString(),
       user: g.user.toGQL()
     }));

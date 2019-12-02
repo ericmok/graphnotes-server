@@ -8,7 +8,7 @@ import { UserAlreadyExistsError } from '../services/Auth';
 import { SCALAR_NON_BLANK_STRING_VALUE_ERROR_MSG } from '../resolvers/Scalars';
 import { queryUsers, signupUser, loginUser } from './TestQueries';
 import { JsonWebTokenError } from 'jsonwebtoken';
-import { encodeId, decodeId } from '../utils';
+import { encodeId, decodeIdOrThrow } from '../utils';
 import { User } from '../entity/User';
 import { TYPES, TYPE_USER } from '../resolvers/Types';
 
@@ -39,11 +39,11 @@ describe('Auth', () => {
       const user = await testDatabase.getRepository(User).findOne({ username: "test3" });
 
       // Test the id
-      const encoded = encodeId(user.id.toString(), TYPE_USER);
+      const encoded = encodeId(user.id, TYPE_USER);
       expect(res.data.signup.id).toBe(encoded);
 
-      const decoded = decodeId(res.data.signup.id);
-      expect(decoded.id).toBe(user.id.toString());
+      const decoded = decodeIdOrThrow(res.data.signup.id);
+      expect(decoded.id).toBe(user.id);
       expect(decoded.typeName).toBe(TYPE_USER);
 
       expect(res.data.signup.username).toBe("test3");
@@ -221,9 +221,9 @@ describe('Auth', () => {
       });
 
       let id = res.data.me.id;
-      id = decodeId(id).id;
+      id = decodeIdOrThrow(id).id;
       const userInDB = await testDatabase.manager.findOne(User, { where: { username: "test" } });
-      expect(id).toBe(userInDB.id.toString());
+      expect(id).toBe(userInDB.id);
       expect(res.data.me.username).toBe("test");
       expect(res.errors).toBeUndefined();
     });

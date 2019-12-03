@@ -27,7 +27,7 @@ export class User {
     graphs: Graph;
 
     encodedId() {
-        return encodeId(this.id.toString(), TYPE_USER);
+        return encodeId(this.id, TYPE_USER);
     }
 
     toGQL(): GQLUser {

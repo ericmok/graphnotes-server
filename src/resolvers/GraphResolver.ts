@@ -3,7 +3,6 @@ import GraphService from '../services/Graph';
 import { AuthenticationError } from 'apollo-server';
 import { getManager } from 'typeorm';
 import { Graph as GraphModel } from '../entity/Graph';
-import { User as UserModel } from '../entity/User';
 
 export const GraphResolver = {
   user: async ({ id }, args, context: Context) => {

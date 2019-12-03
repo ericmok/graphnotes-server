@@ -1,7 +1,7 @@
-import { GQLQueryResolvers, GQLGraph } from "../generated/graphql";
-import { User } from "../entity/User";
-import AuthService from "../services/Auth";
-import GraphService from "../services/Graph";
+import { GQLQueryResolvers, GQLGraph } from "../../generated/graphql";
+import { User } from "../../entity/User";
+import AuthService from "../../services/Auth";
+import GraphService from "../../services/Graph";
 
 export const Query: GQLQueryResolvers = {
   async users(root, args, context, info) {

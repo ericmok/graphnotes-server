@@ -1,10 +1,10 @@
-import { Query } from './Query';
-import { User } from './User';
-import Auth from './Mutation/Auth';
 import { NonBlankString } from './Scalars';
 import { decodeIdOrThrow, Context } from '../utils';
+import { Query } from './Query';
+import { UserResolver } from './UserResolver';
+import { GraphResolver } from './GraphResolver';
+import Auth from './Mutation/Auth';
 import Graph from './Mutation/Graph';
-import { GraphResolver } from './Graph';
 
 export default {
   Query,
@@ -19,6 +19,6 @@ export default {
     }
   },
   NonBlankString,
-  User,
+  User: UserResolver,
   Graph: GraphResolver
 }

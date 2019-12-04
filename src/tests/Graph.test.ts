@@ -10,7 +10,7 @@ import { JsonWebTokenError } from 'jsonwebtoken';
 import { encodeId, decodeIdOrThrow } from '../utils';
 import { User } from '../entity/User';
 import { Graph } from '../entity/Graph';
-import { GRAPH_UNIQUE_NAME_REQUIRED_MSG } from '../services/Graph';
+import { GRAPH_UNIQUE_NAME_REQUIRED_MSG } from '../services/GraphService';
 import gql from 'graphql-tag';
 
 let server: ApolloServer;

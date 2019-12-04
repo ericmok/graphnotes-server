@@ -1,7 +1,7 @@
 import { SchemaDirectiveVisitor } from 'apollo-server';
 import { defaultFieldResolver, GraphQLDirective, DirectiveLocation, GraphQLField } from 'graphql';
 import { Context, getTokenFromContext } from '../utils';
-import Auth, { UnknownAuthError } from '../services/Auth';
+import AuthService, { UnknownAuthError } from '../services/AuthService';
 import { getManager } from 'typeorm';
 import { User } from '../entity/User';
 
@@ -18,7 +18,7 @@ export class RequiresAuthDirective extends SchemaDirectiveVisitor {
     field.resolve = async function (source, args, context: Context, info) {
       const token = getTokenFromContext(context);
 
-      const user = await Auth.validateToken(token);
+      const user = await AuthService.validateToken(token);
       const userEntity = await getManager().findOne(User, { username: user.username });
       
       if (userEntity) {

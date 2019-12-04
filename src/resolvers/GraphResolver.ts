@@ -1,5 +1,5 @@
 import { Context, decodeIdOrThrow } from '../utils';
-import GraphService from '../services/Graph';
+import GraphService from '../services/GraphService';
 import { AuthenticationError } from 'apollo-server';
 import { getManager } from 'typeorm';
 import { Graph as GraphModel } from '../entity/Graph';

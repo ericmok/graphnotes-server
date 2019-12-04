@@ -4,7 +4,7 @@ import { GraphQLResponse } from 'graphql-extensions';
 import { Connection } from 'typeorm';
 import { GQLToken } from '../generated/graphql';
 import createTestServer, { getTestDatabaseInstance, clearDatabase } from './TestServer';
-import { UserAlreadyExistsError } from '../services/Auth';
+import { UserAlreadyExistsError } from '../services/AuthService';
 import { SCALAR_NON_BLANK_STRING_VALUE_ERROR_MSG } from '../resolvers/Scalars';
 import { queryUsers, signupUser, loginUser } from './TestQueries';
 import { JsonWebTokenError } from 'jsonwebtoken';

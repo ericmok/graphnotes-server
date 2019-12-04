@@ -1,5 +1,5 @@
 import { GQLMutationResolvers } from '../../generated/graphql';
-import GraphService from '../../services/Graph';
+import GraphService from '../../services/GraphService';
 import { AuthenticationError } from 'apollo-server';
 
 const Graph: GQLMutationResolvers = {

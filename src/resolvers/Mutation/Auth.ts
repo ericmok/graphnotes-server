@@ -1,5 +1,5 @@
 import { GQLMutationResolvers } from '../../generated/graphql';
-import AuthService from '../../services/Auth';
+import AuthService from '../../services/AuthService';
 
 const Auth: GQLMutationResolvers = {
   async signup(root, { username, password }, context) {

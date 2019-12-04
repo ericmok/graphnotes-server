@@ -44,7 +44,7 @@ export interface TokenPayload {
   username: string
 }
 
-const Auth = {
+const AuthService = {
   async signup(username: string, password: string) {
     const existingUsers = await getManager().find(User, {
       username
@@ -129,7 +129,7 @@ const Auth = {
   }
 };
 
-export default Auth;
+export default AuthService;
 
 /*
 References

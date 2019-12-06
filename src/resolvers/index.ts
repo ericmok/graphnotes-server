@@ -1,4 +1,5 @@
 import { NonBlankString } from './Scalars';
+import { GraphQLJSONObject } from 'graphql-type-json';
 import { decodeIdOrThrow, Context } from '../utils';
 import { Query } from './Query';
 import { UserResolver } from './UserResolver';
@@ -18,6 +19,7 @@ export default {
       return idPayload.typeName;
     }
   },
+  JSONObject: GraphQLJSONObject,
   NonBlankString,
   User: UserResolver,
   Graph: GraphResolver

@@ -1,3 +1,4 @@
+scalar JSONObject
 scalar NonBlankString
 
 directive @requiresAuth on FIELD_DEFINITION
@@ -73,8 +74,10 @@ type CreateGraphResult {
 
 extend type Query {
   graph(id: ID!): Graph
+  vertex(graphId: ID!): [Vertex]!
 }
 
 extend type Mutation {
   createGraph(name: String): CreateGraphResult! @requiresAuth
+  createVertex(graphId: ID!, target: ID, insertAsChild: Boolean!, content: String!, components: [JSONObject]): Boolean
 }

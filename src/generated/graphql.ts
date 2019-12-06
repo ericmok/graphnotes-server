@@ -10,6 +10,7 @@ export type Scalars = {
   Int: number,
   Float: number,
   NonBlankString: any,
+  JSONObject: any,
 };
 
 
@@ -36,12 +37,14 @@ export type GQLGraph = GQLNode & {
   traversalRoot?: Maybe<GQLTraversalVertex>,
 };
 
+
 export type GQLMutation = {
    __typename?: 'Mutation',
   _?: Maybe<Scalars['Boolean']>,
   signup?: Maybe<GQLUser>,
   login?: Maybe<GQLToken>,
   createGraph: GQLCreateGraphResult,
+  createVertex?: Maybe<Scalars['Boolean']>,
 };
 
 
@@ -61,6 +64,15 @@ export type GQLMutationCreateGraphArgs = {
   name?: Maybe<Scalars['String']>
 };
 
+
+export type GQLMutationCreateVertexArgs = {
+  graphId: Scalars['ID'],
+  target?: Maybe<Scalars['ID']>,
+  insertAsChild: Scalars['Boolean'],
+  content: Scalars['String'],
+  components?: Maybe<Array<Maybe<Scalars['JSONObject']>>>
+};
+
 export type GQLNode = {
   id: Scalars['ID'],
 };
@@ -72,11 +84,17 @@ export type GQLQuery = {
   users: Array<Maybe<GQLUser>>,
   me?: Maybe<GQLUser>,
   graph?: Maybe<GQLGraph>,
+  vertex: Array<Maybe<GQLVertex>>,
 };
 
 
 export type GQLQueryGraphArgs = {
   id: Scalars['ID']
+};
+
+
+export type GQLQueryVertexArgs = {
+  graphId: Scalars['ID']
 };
 
 export type GQLToken = {
@@ -192,6 +210,7 @@ export type GQLResolversTypes = {
   NonBlankString: ResolverTypeWrapper<Scalars['NonBlankString']>,
   Token: ResolverTypeWrapper<GQLToken>,
   CreateGraphResult: ResolverTypeWrapper<GQLCreateGraphResult>,
+  JSONObject: ResolverTypeWrapper<Scalars['JSONObject']>,
   Arc: ResolverTypeWrapper<GQLArc>,
 };
 
@@ -210,6 +229,7 @@ export type GQLResolversParentTypes = {
   NonBlankString: Scalars['NonBlankString'],
   Token: GQLToken,
   CreateGraphResult: GQLCreateGraphResult,
+  JSONObject: Scalars['JSONObject'],
   Arc: GQLArc,
 };
 
@@ -235,11 +255,16 @@ export type GQLGraphResolvers<ContextType = Context, ParentType extends GQLResol
   traversalRoot?: Resolver<Maybe<GQLResolversTypes['TraversalVertex']>, ParentType, ContextType>,
 };
 
+export interface GQLJsonObjectScalarConfig extends GraphQLScalarTypeConfig<GQLResolversTypes['JSONObject'], any> {
+  name: 'JSONObject'
+}
+
 export type GQLMutationResolvers<ContextType = Context, ParentType extends GQLResolversParentTypes['Mutation'] = GQLResolversParentTypes['Mutation']> = {
   _?: Resolver<Maybe<GQLResolversTypes['Boolean']>, ParentType, ContextType>,
   signup?: Resolver<Maybe<GQLResolversTypes['User']>, ParentType, ContextType, RequireFields<GQLMutationSignupArgs, 'username' | 'password'>>,
   login?: Resolver<Maybe<GQLResolversTypes['Token']>, ParentType, ContextType, RequireFields<GQLMutationLoginArgs, 'username' | 'password'>>,
   createGraph?: Resolver<GQLResolversTypes['CreateGraphResult'], ParentType, ContextType, GQLMutationCreateGraphArgs>,
+  createVertex?: Resolver<Maybe<GQLResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<GQLMutationCreateVertexArgs, 'graphId' | 'insertAsChild' | 'content'>>,
 };
 
 export type GQLNodeResolvers<ContextType = Context, ParentType extends GQLResolversParentTypes['Node'] = GQLResolversParentTypes['Node']> = {
@@ -256,6 +281,7 @@ export type GQLQueryResolvers<ContextType = Context, ParentType extends GQLResol
   users?: Resolver<Array<Maybe<GQLResolversTypes['User']>>, ParentType, ContextType>,
   me?: Resolver<Maybe<GQLResolversTypes['User']>, ParentType, ContextType>,
   graph?: Resolver<Maybe<GQLResolversTypes['Graph']>, ParentType, ContextType, RequireFields<GQLQueryGraphArgs, 'id'>>,
+  vertex?: Resolver<Array<Maybe<GQLResolversTypes['Vertex']>>, ParentType, ContextType, RequireFields<GQLQueryVertexArgs, 'graphId'>>,
 };
 
 export type GQLTokenResolvers<ContextType = Context, ParentType extends GQLResolversParentTypes['Token'] = GQLResolversParentTypes['Token']> = {
@@ -287,6 +313,7 @@ export type GQLResolvers<ContextType = Context> = {
   Arc?: GQLArcResolvers<ContextType>,
   CreateGraphResult?: GQLCreateGraphResultResolvers<ContextType>,
   Graph?: GQLGraphResolvers<ContextType>,
+  JSONObject?: GraphQLScalarType,
   Mutation?: GQLMutationResolvers<ContextType>,
   Node?: GQLNodeResolvers,
   NonBlankString?: GraphQLScalarType,

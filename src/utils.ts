@@ -1,7 +1,7 @@
 import { Connection } from "typeorm";
 import { User } from './entity/User';
 import { UserInputError, ApolloError } from 'apollo-server';
-import { TYPES } from './resolvers/Types';
+import { TYPES } from './Types';
 
 export const DEFAULT_SECRET = "h4-98po"
 export const APP_SECRET = process.env.APP_SECRET || DEFAULT_SECRET;

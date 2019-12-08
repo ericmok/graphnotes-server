@@ -1,7 +1,7 @@
 import { getManager, InsertResult, QueryFailedError } from 'typeorm';
 import { UserInputError } from 'apollo-server';
 import { encodeId, Context, decodeIdOrThrow, NotFoundError } from '../utils';
-import { TYPE_GRAPH } from '../resolvers/Types';
+import { TYPE_GRAPH } from '../Types';
 import { Graph } from '../entity/Graph';
 import { User } from '../entity/User';
 

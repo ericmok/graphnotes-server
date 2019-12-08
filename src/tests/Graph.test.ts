@@ -5,7 +5,7 @@ import { Connection } from 'typeorm';
 import { GQLToken } from '../generated/graphql';
 import createTestServer, { getTestDatabaseInstance, clearDatabase } from './TestServer';
 import { queryUsers, signupUser, loginUser, createGraph } from './TestQueries';
-import { TYPE_GRAPH } from '../resolvers/Types';
+import { TYPE_GRAPH } from '../Types';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { encodeId, decodeIdOrThrow } from '../utils';
 import { User } from '../entity/User';

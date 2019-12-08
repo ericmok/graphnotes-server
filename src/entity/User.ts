@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, ObjectID, Column, OneToMany } from "typeorm";
 import { GQLUser } from '../generated/graphql';
-import { TYPE_USER } from '../resolvers/Types';
+import { TYPE_USER } from '../Types';
 import { encodeId } from '../utils';
 import { Graph } from './Graph';
 

@@ -10,7 +10,7 @@ import { queryUsers, signupUser, loginUser } from './TestQueries';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { encodeId, decodeIdOrThrow } from '../utils';
 import { User } from '../entity/User';
-import { TYPES, TYPE_USER } from '../resolvers/Types';
+import { TYPES, TYPE_USER } from '../Types';
 
 let server: ApolloServer;
 let client: ApolloServerTestClient;

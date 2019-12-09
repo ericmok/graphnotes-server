@@ -67,7 +67,7 @@ const GraphService = {
   async getGraphsForUser(user: User) {
     // TODO: user validation here?    
     const graphRepo = await getManager().getRepository(Graph);
-    const graphs = await graphRepo.find({ where: {user: user}, relations: ["user"] });
+    const graphs = await graphRepo.find({ where: { user: user }, relations: ["user"] });
 
     const res = graphs.map(g => ({
       id: encodeId(g.id, TYPE_GRAPH),

@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, OneToMany } from "typeorm";
 import { GQLGraph } from '../generated/graphql';
 import { User } from "./User";
+import { Vertex } from "./Vertex";
 
 @Entity()
 @Unique("UQ_NAME", ["name", "user"])
@@ -13,5 +14,8 @@ export class Graph {
   name: string;
 
   @ManyToOne(type => User, user => user.graphs)
-  user: User
+  user: User;
+
+  @OneToMany(type => Vertex, vertex => vertex.graph)
+  vertices: Vertex[];
 }

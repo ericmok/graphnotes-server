@@ -40,8 +40,9 @@ type Mutation {
 type Vertex implements Node {
   id: ID!
   user: User!
+  graph: Graph!
   content: String!
-  components: [String]!
+  components: [JSONObject]!
 }
 
 type Arc implements Node {
@@ -64,7 +65,8 @@ type Graph implements Node {
   user: User!
   name: String
   root: Vertex
-  traversalRoot: TraversalVertex
+  traversalRoot: TraversalVertex  
+  vertices: [Vertex]! #TODO
 }
 
 type CreateGraphResult {
@@ -74,10 +76,10 @@ type CreateGraphResult {
 
 extend type Query {
   graph(id: ID!): Graph
-  vertex(graphId: ID!): [Vertex]!
+  vertex(id: ID!): Vertex
 }
 
 extend type Mutation {
   createGraph(name: String): CreateGraphResult! @requiresAuth
-  createVertex(graphId: ID!, target: ID, insertAsChild: Boolean!, content: String!, components: [JSONObject]): Boolean
+  createVertex(graphId: ID!, content: String!, components: [JSONObject]): Vertex @requiresAuth
 }

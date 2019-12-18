@@ -6,6 +6,7 @@ import { UserResolver } from './UserResolver';
 import { GraphResolver } from './GraphResolver';
 import Auth from './Mutation/Auth';
 import Graph from './Mutation/Graph';
+import VertexResolver from './VertexResolver';
 
 export default {
   Query,
@@ -22,5 +23,6 @@ export default {
   JSONObject: GraphQLJSONObject,
   NonBlankString,
   User: UserResolver,
-  Graph: GraphResolver
+  Graph: GraphResolver,
+  Vertex: VertexResolver
 }

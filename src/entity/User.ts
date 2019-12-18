@@ -1,6 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, ObjectID, Column, OneToMany } from "typeorm";
-import { GQLUser } from '../generated/graphql';
-import { TYPE_USER } from '../Types';
+import { TYPE_USER, UserParent } from '../Types';
 import { encodeId } from '../utils';
 import { Graph } from './Graph';
 
@@ -30,8 +29,9 @@ export class User {
         return encodeId(this.id, TYPE_USER);
     }
 
-    toGQL(): GQLUser {
+    toGQL(): UserParent {
         return {
+            _id: this.id,
             id: this.encodedId(),
             username: this.username
         }

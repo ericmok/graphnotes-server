@@ -13,5 +13,8 @@ export const Query: GQLQueryResolvers = {
   },
   async graph(root, { id }, context) {
     return await GraphService.getGraph(id, context);
+  },
+  async vertex(root, { id }, context) {
+    return await GraphService.getVertex(id);
   }
 }

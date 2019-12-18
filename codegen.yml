@@ -6,6 +6,10 @@ generates:
     config:
       contextType: ../utils#Context
       typesPrefix: 'GQL'
+      mappers:
+        User: ../Types#UserParent
+        Graph: ../Types#GraphParent
+        Vertex: ../Types#VertexParent
     plugins:
       - "typescript"
       - "typescript-resolvers"

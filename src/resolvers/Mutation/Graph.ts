@@ -9,6 +9,9 @@ const Graph: GQLMutationResolvers = {
       return result;
     }
     throw new AuthenticationError("Must be signed in to create Graph");
+  },
+  async createVertex(parent, args, context, info) {
+    return GraphService.createVertex(args.graphId, context.user, args.content, args.components);
   }
 }
 

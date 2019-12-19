@@ -294,4 +294,75 @@ describe('Vertex', () => {
     expect(res.errors[0].extensions.code).toBe('NOT_FOUND_ERROR');
     expect(res.data.vertex).toBeNull();
   });
+
+
+  test('Can query Graph.Vertices', async () => {
+
+    res = await client.mutate({
+      mutation: gql`
+        mutation CreateVertexMutation($graphId: ID!, $content: String!, $components: [JSONObject]) {
+          createVertex(graphId: $graphId, content: $content, components: $components) {
+            id
+            content
+            graph {
+              id
+            }
+            components
+          }
+        }
+      `,
+      variables: {
+        graphId: graphId,
+        content: "vertex1",
+        components: [{ "collapsed": true }]
+      }
+    });
+
+    res = await client.mutate({
+      mutation: gql`
+        mutation CreateVertexMutation($graphId: ID!, $content: String!, $components: [JSONObject]) {
+          createVertex(graphId: $graphId, content: $content, components: $components) {
+            id
+            content
+            graph {
+              id
+            }
+            components
+          }
+        }
+      `,
+      variables: {
+        graphId: graphId,
+        content: "vertex2",
+        components: [{ "collapsed": true }]
+      }
+    });
+
+    res = await client.query({
+      query: gql`
+        query GetVerticesFromGraph($graphId: ID!) {
+          graph(id: $graphId) {
+            id
+            vertices {
+              id
+              user {
+                id
+                username
+              }
+              content
+            }
+          }
+        }
+      `,
+      variables: {
+        graphId
+      }
+    });
+
+    expect(res.errors).toBeUndefined();
+    expect(res.data.graph.vertices.length).toBe(2);
+    expect(res.data.graph.vertices[0].user.username).toBe("test");
+    expect(res.data.graph.vertices[0].content).toBe("vertex1");
+    expect(res.data.graph.vertices[1].content).toBe("vertex2");
+  });
 });

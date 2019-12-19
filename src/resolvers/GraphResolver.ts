@@ -4,8 +4,9 @@ import { AuthenticationError } from 'apollo-server';
 import { getManager } from 'typeorm';
 import { Graph as GraphModel } from '../entity/Graph';
 import { GQLGraphResolvers } from '../generated/graphql';
-import { TYPE_GRAPH } from '../Types';
+import { TYPE_GRAPH, VertexParent } from '../Types';
 import { User } from '../entity/User';
+import { Vertex } from '../entity/Vertex';
 
 export const GraphResolver: GQLGraphResolvers = {
   id: (parent) => {
@@ -24,5 +25,17 @@ export const GraphResolver: GQLGraphResolvers = {
       }
     });
     return res.toGQL();
+  },
+  vertices: async (parent, args, context: Context) => {
+    const eid = parent._id;
+    const res = await context.db.getRepository(Vertex).find({
+      where: {
+        graphId: eid
+      }
+    });
+
+    return res.map(vertex => {
+      return vertex.toGQL();
+    });
   }
 };

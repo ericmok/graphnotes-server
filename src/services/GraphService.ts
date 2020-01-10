@@ -1,10 +1,11 @@
-import { getManager, InsertResult, QueryFailedError } from 'typeorm';
+import { getManager, InsertResult, QueryFailedError, Connection } from 'typeorm';
 import { UserInputError, ApolloError } from 'apollo-server';
 import { encodeId, Context, decodeIdOrThrow, NotFoundError } from '../utils';
 import { TYPE_GRAPH } from '../Types';
 import { Graph } from '../entity/Graph';
 import { User } from '../entity/User';
 import { Vertex } from '../entity/Vertex';
+import { Arc } from '../entity/Arc';
 
 export const GRAPH_UNIQUE_NAME_REQUIRED_MSG = `Graph name must be unique per user`;
 
@@ -128,6 +129,13 @@ const GraphService = {
     catch (err) {
       throw new VertexNotFoundError(vertexIdString);
     }
+  },
+  async getArc(arcIdString: string, db: Connection) {
+    const eArcId = decodeIdOrThrow(arcIdString).id;
+    const arcRepo = db.manager.getRepository(Arc);
+    const arc = await arcRepo.findOneOrFail(eArcId);
+
+    return arc.toGQL();
   }
 };
 

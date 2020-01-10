@@ -7,6 +7,7 @@ import { GraphResolver } from './GraphResolver';
 import Auth from './Mutation/Auth';
 import Graph from './Mutation/Graph';
 import VertexResolver from './VertexResolver';
+import ArcResolver from './ArcResolver';
 
 export default {
   Query,
@@ -24,5 +25,6 @@ export default {
   NonBlankString,
   User: UserResolver,
   Graph: GraphResolver,
-  Vertex: VertexResolver
+  Vertex: VertexResolver,
+  Arc: ArcResolver
 }

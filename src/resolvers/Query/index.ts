@@ -16,5 +16,8 @@ export const Query: GQLQueryResolvers = {
   },
   async vertex(root, { id }, context) {
     return await GraphService.getVertex(id);
+  },
+  async arc(root, { id }, context) {
+    return await GraphService.getArc(id, context.db);
   }
 }

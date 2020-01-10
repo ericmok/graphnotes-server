@@ -79,3 +79,77 @@ export const createGraph = async (
     }
   })
 };
+
+export const CREATE_ARC_GQL = gql`
+mutation CreateArcMutation($vertexSrcId: ID!, $vertexDstId: ID!) {
+  createArc(vertexSrcId: $vertexSrcId, vertexDstId: $vertexDstId) {
+    id
+    user {
+      id
+      username
+    }
+    src {
+      id
+      user {
+        id
+        username
+      }
+      content
+    }
+    dst {
+      id
+      user {
+        id
+        username
+      }
+      content
+    }
+  }
+}
+`;
+
+export async function createArc(client: ApolloServerTestClient, vertexSrcId: string, vertexDstId: string) {
+  return await client.mutate({
+    mutation: CREATE_ARC_GQL,
+    variables: {
+      vertexSrcId,
+      vertexDstId
+    }
+  });
+}
+
+const GQL_QUERY_ARC = gql`
+  query QueryArc($id: ID!) {
+    arc(id: $id) { 
+      id
+      user {
+        id
+        username
+      }
+      src {
+        id
+        user {
+          id
+          username
+        }
+        content
+      }
+      dst {
+        id
+        user {
+          id
+          username
+        }
+        content
+      }
+    }
+  }`;
+
+export const queryArc = async (client: ApolloServerTestClient, id: string) => {
+  return await client.query({
+    query: GQL_QUERY_ARC,
+    variables: {
+      id
+    }
+  });
+};

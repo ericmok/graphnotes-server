@@ -1,5 +1,5 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import { UserParent, GraphParent, VertexParent } from '../Types';
+import { UserParent, GraphParent, VertexParent, ArcParent } from '../Types';
 import { Context } from '../utils';
 export type Maybe<T> = T | null;
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
@@ -48,6 +48,7 @@ export type GQLMutation = {
   login?: Maybe<GQLToken>,
   createGraph: GQLCreateGraphResult,
   createVertex?: Maybe<GQLVertex>,
+  createArc?: Maybe<GQLArc>,
 };
 
 
@@ -74,6 +75,12 @@ export type GQLMutationCreateVertexArgs = {
   components?: Maybe<Array<Maybe<Scalars['JSONObject']>>>
 };
 
+
+export type GQLMutationCreateArcArgs = {
+  vertexSrcId: Scalars['ID'],
+  vertexDstId: Scalars['ID']
+};
+
 export type GQLNode = {
   id: Scalars['ID'],
 };
@@ -86,6 +93,7 @@ export type GQLQuery = {
   me?: Maybe<GQLUser>,
   graph?: Maybe<GQLGraph>,
   vertex?: Maybe<GQLVertex>,
+  arc?: Maybe<GQLArc>,
 };
 
 
@@ -95,6 +103,11 @@ export type GQLQueryGraphArgs = {
 
 
 export type GQLQueryVertexArgs = {
+  id: Scalars['ID']
+};
+
+
+export type GQLQueryArcArgs = {
   id: Scalars['ID']
 };
 
@@ -209,11 +222,11 @@ export type GQLResolversTypes = {
   Vertex: ResolverTypeWrapper<VertexParent>,
   JSONObject: ResolverTypeWrapper<Scalars['JSONObject']>,
   TraversalVertex: ResolverTypeWrapper<Omit<GQLTraversalVertex, 'parent' | 'vertex' | 'children'> & { parent?: Maybe<GQLResolversTypes['TraversalVertex']>, vertex: GQLResolversTypes['Vertex'], children: Array<Maybe<GQLResolversTypes['TraversalVertex']>> }>,
+  Arc: ResolverTypeWrapper<ArcParent>,
   Mutation: ResolverTypeWrapper<{}>,
   NonBlankString: ResolverTypeWrapper<Scalars['NonBlankString']>,
   Token: ResolverTypeWrapper<GQLToken>,
   CreateGraphResult: ResolverTypeWrapper<GQLCreateGraphResult>,
-  Arc: ResolverTypeWrapper<Omit<GQLArc, 'user' | 'src' | 'dst'> & { user: GQLResolversTypes['User'], src: GQLResolversTypes['Vertex'], dst: GQLResolversTypes['Vertex'] }>,
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -228,11 +241,11 @@ export type GQLResolversParentTypes = {
   Vertex: VertexParent,
   JSONObject: Scalars['JSONObject'],
   TraversalVertex: Omit<GQLTraversalVertex, 'parent' | 'vertex' | 'children'> & { parent?: Maybe<GQLResolversParentTypes['TraversalVertex']>, vertex: GQLResolversParentTypes['Vertex'], children: Array<Maybe<GQLResolversParentTypes['TraversalVertex']>> },
+  Arc: ArcParent,
   Mutation: {},
   NonBlankString: Scalars['NonBlankString'],
   Token: GQLToken,
   CreateGraphResult: GQLCreateGraphResult,
-  Arc: Omit<GQLArc, 'user' | 'src' | 'dst'> & { user: GQLResolversParentTypes['User'], src: GQLResolversParentTypes['Vertex'], dst: GQLResolversParentTypes['Vertex'] },
 };
 
 export type GQLRequiresAuthDirectiveResolver<Result, Parent, ContextType = Context, Args = {  }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
@@ -268,6 +281,7 @@ export type GQLMutationResolvers<ContextType = Context, ParentType extends GQLRe
   login?: Resolver<Maybe<GQLResolversTypes['Token']>, ParentType, ContextType, RequireFields<GQLMutationLoginArgs, 'username' | 'password'>>,
   createGraph?: Resolver<GQLResolversTypes['CreateGraphResult'], ParentType, ContextType, GQLMutationCreateGraphArgs>,
   createVertex?: Resolver<Maybe<GQLResolversTypes['Vertex']>, ParentType, ContextType, RequireFields<GQLMutationCreateVertexArgs, 'graphId' | 'content'>>,
+  createArc?: Resolver<Maybe<GQLResolversTypes['Arc']>, ParentType, ContextType, RequireFields<GQLMutationCreateArcArgs, 'vertexSrcId' | 'vertexDstId'>>,
 };
 
 export type GQLNodeResolvers<ContextType = Context, ParentType extends GQLResolversParentTypes['Node'] = GQLResolversParentTypes['Node']> = {
@@ -285,6 +299,7 @@ export type GQLQueryResolvers<ContextType = Context, ParentType extends GQLResol
   me?: Resolver<Maybe<GQLResolversTypes['User']>, ParentType, ContextType>,
   graph?: Resolver<Maybe<GQLResolversTypes['Graph']>, ParentType, ContextType, RequireFields<GQLQueryGraphArgs, 'id'>>,
   vertex?: Resolver<Maybe<GQLResolversTypes['Vertex']>, ParentType, ContextType, RequireFields<GQLQueryVertexArgs, 'id'>>,
+  arc?: Resolver<Maybe<GQLResolversTypes['Arc']>, ParentType, ContextType, RequireFields<GQLQueryArcArgs, 'id'>>,
 };
 
 export type GQLTokenResolvers<ContextType = Context, ParentType extends GQLResolversParentTypes['Token'] = GQLResolversParentTypes['Token']> = {

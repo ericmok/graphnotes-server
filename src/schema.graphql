@@ -77,9 +77,11 @@ type CreateGraphResult {
 extend type Query {
   graph(id: ID!): Graph
   vertex(id: ID!): Vertex
+  arc(id: ID!): Arc
 }
 
 extend type Mutation {
   createGraph(name: String): CreateGraphResult! @requiresAuth
   createVertex(graphId: ID!, content: String!, components: [JSONObject]): Vertex @requiresAuth
+  createArc(vertexSrcId: ID!, vertexDstId: ID!): Arc @requiresAuth
 }

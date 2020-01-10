@@ -10,6 +10,7 @@ generates:
         User: ../Types#UserParent
         Graph: ../Types#GraphParent
         Vertex: ../Types#VertexParent
+        Arc: ../Types#ArcParent
     plugins:
       - "typescript"
       - "typescript-resolvers"
